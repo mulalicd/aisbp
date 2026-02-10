@@ -1,0 +1,795 @@
+{
+  "metadata": {
+    "title": "AI SOLVED BUSINESS PROBLEMS",
+    "subtitle": "50 Real-World Challenges from 10 Industries: A Manager's Workbook",
+    "edition": "January 2026",
+    "location": "Sarajevo",
+    "totalProblems": 50,
+    "totalChapters": 10,
+    "targetAudience": "Chief Supply Chain Officers, VPs Operations, CFOs, CIOs | Mid-market ($50M-$500M revenue)",
+    "published": "2026-01-01",
+    "philosophy": "No transformation narratives. No predictions. No generic advice. What's here is structured method: 50 specific business problems, 50 executable prompts, 150 documented failure modes with recovery playbooks.",
+    "epistemology": "We can only work with what we observe. AI processes data, finds patterns, generates outputs based on statistical likelihood. It cannot verify if outputs are true. It cannot account for what it hasn't seen. It cannot tell you when it's wrong. Your domain knowledge determines if the tool is dangerous or powerful."
+  },
+  "chapters": [
+    {
+      "id": "ch1",
+      "number": 1,
+      "title": "Logistics & Supply Chain - The AI Operating System",
+      "intro": "Your phone rings at 2:00 AM. It's the Port of Long Beach. Your Q3 product launch containers are stuck behind a vessel that lost power. By 8:00 AM, the CFO asks why transportation costs are decoupling from revenue. By 10:00 AM, the board demands working capital efficiency explanations. By noon, you're explaining why your AI pilot hasn't prevented this. This is not an AI problem. This is a business problem that AI can help solve, if you know what you're doing.",
+      "crises": [
+        {
+          "title": "The Inventory Bullwhip Hangover",
+          "description": "You're sitting on $14M of slow-moving inventory costing 22% annually in carrying costs (ASMP-LSC-001). You secured supply at any cost in 2022. Now you're paralyzed between memory of empty shelves and a lazy balance sheet the CFO won't fund."
+        },
+        {
+          "title": "The Carrier Ransom",
+          "description": "Freight spend up 34% since 2021 with plateaued service levels. Nickel-and-dimed by accessorial charges, detention, demurrage. Last quarter paid $420,000 in detention fees because warehouse couldn't coordinate dock schedules (ASMP-LSC-002). Paying a chaos tax to carriers because internal systems are too slow to react."
+        },
+        {
+          "title": "The Human Middleware Collapse",
+          "description": "Best supply chain planners quitting. They didn't go to school to spend six hours daily copy-pasting data from AS/400 to Excel. When one of these human nodes leaves, your institutional knowledge walks out the door."
+        }
+      ],
+      "structuralTrap": "You're succeeding at managing a system perfectly designed for 2012. The playbook changed from Lean to Agile. Your current tools are playing checkers in a 3D chess world. The Decision Gap - time between port strike in Ningbo and operational reroute on your dock - averages 14.2 hours (ASMP-LSC-003). AI is the OS upgrade required to close this gap.",
+      "problems": [
+        {
+          "id": "ch1_p1",
+          "number": 1,
+          "title": "The Freight Leak (Automated Audit & Dispute)",
+          "severity": "LOW",
+          "confidenceScore": 8.8,
+          "promptability": 9.5,
+          "budget": "<$50K",
+          "timeline": "21 Days",
+          "narrative": "Your AP team spot-checks 10% of freight invoices, missing the death-by-thousand-cuts: $80 residential delivery surcharges on warehouse transfers, $150 detention fees never pre-approved. 6% of all freight invoices contain errors (ASMP-LSC-004). On $12M annual spend, you're tipping carriers $720,000 yearly for mistakes you're too busy to catch. Staring at blurry PDF invoices while cross-referencing 50-page contracts. By 3 PM Friday, your AP clerk just wants to clear the queue.",
+          "operationalReality": "Your AP clerk opens not 500 invoices but a single Dispute Dashboard. Over weekend, AI ingested carrier contracts (PDFs) and compared them to invoice batches (CSV). At 9:15 AM Monday, clerk sees Carrier X charged Residential Surcharge on 42 shipments to commercial warehouse. AI notes: Contract Clause 7.2 defines commercial by ZIP - this warehouse is commercial, dispute valid. AI drafted dispute email citing page 23 paragraph 4. Clerk reviews 42 flags, hits Approve All, disputes sent. 20 hours of forensic work becomes 15 minutes.",
+          "whyTraditionalMethodsFail": "Third-party audit firms take 25% cut, use rigid rules-based software that breaks when carrier changes 'Fuel-S' to 'F-Surcharge'. Traditional methods assume clean data and simple contracts. Your planners spend 60% of day as human macros filling gaps between TMS and ERP. Human middleware doesn't scale.",
+          "managerDecisionOptions": [
+            {
+              "option": "Status Quo (Manual Spot-Checks)",
+              "pros": ["Zero software spend", "Avoids carrier friction from disputing small amounts"],
+              "cons": ["Lose $500K+ annually", "Zero systemic visibility into carrier overcharging patterns"],
+              "acceptableIf": "Total freight spend <$1M and fewer than 3 carriers"
+            },
+            {
+              "option": "3rd-Party Audit Firm",
+              "pros": ["Shifts labor burden", "No-cost entry (contingency based)"],
+              "cons": ["High long-term cost (25% of recovery)", "Doesn't fix root cause"],
+              "roi": "1-2% of spend realistic recovery"
+            },
+            {
+              "option": "AI-Augmented Contract-to-Invoice Auditor",
+              "pros": ["100% audit coverage", "Identifies systemic overcharging", "Pre-writes dispute emails"],
+              "cons": ["Requires contract digitization setup", "Needs IT approval for read-only access"],
+              "roi": "Conservative 3-5% recovery ($350K+ on $12M)",
+              "honest": "OPTION 3 is only path offering permanent structural fix. If high LTL or small-parcel volume, fastest way to find budget for other AI initiatives."
+            }
+          ],
+          "businessCase": {
+            "currentState": {
+              "annualFreightSpend": "$12,000,000",
+              "estimatedErrorRate": "6% (ASMP-LSC-004: Aberdeen Group 2023)",
+              "totalLeak": "$720,000",
+              "currentRecovery": "$72,000",
+              "currentAnnualLoss": "$648,000"
+            },
+            "withAIAugmentedAudit": {
+              "targetRecoveryRate": "35%",
+              "totalCapturedErrors": "$252,000",
+              "apiSoftwareCost": "$5,000",
+              "analystReviewTime": "$12,000",
+              "year1NetRecovery": "$235,000"
+            },
+            "implementationCost": {
+              "setupTuning": "$15,000",
+              "totalInvestment": "$15,000"
+            },
+            "payback": "1.8 Months",
+            "sensitivityAnalysis": {
+              "bestCase": "$720K annual gain (6% recovery)",
+              "realisticCase": "$360K annual gain (3% recovery)",
+              "conservativeCase": "$120K annual gain (1% recovery)",
+              "breakEvenThreshold": "0.2% recovery"
+            }
+          },
+          "failureModes": [
+            {
+              "id": "fm1_1",
+              "title": "The Phantom Rate Hallucination",
+              "symptom": "Carrier calls livid - received 100 disputes for Late Delivery Penalty not in contract",
+              "rootCause": "LLM misinterpreted blurry PDF fuel table or old draft, filled gaps with industry standards not your specific legal terms",
+              "diagnostics": [
+                "Did AI provide page and paragraph reference?",
+                "Does AI-extracted rate match master contract in 95% of spot tests?",
+                "If no: OCR quality issue"
+              ],
+              "recovery": {
+                "immediate24hr": "Switch to Draft Only mode - disable automated email, require AP clerk verification of Contract Citation before sending",
+                "shortTerm": "Re-digitize contracts with high-fidelity OCR (AWS Textract, Adobe Pro)",
+                "longTerm": "Maintain contract versioning system with clear effective dates"
+              },
+              "emailTemplate": "SUBJECT: Project Audit - Freight Dispute Recovery Plan\n\n[CEO], We identified a data-quality issue in our AI Freight Audit pilot today. The system misread a specific fuel surcharge table, leading to $2,500 in incorrect disputes.\n\nWHAT WE'RE DOING: Paused automated emails. Re-scanning master contracts with higher-fidelity tools this week.\n\nIMPACT: Delays full rollout by 4 days but ensures carrier relationship integrity. Our $250K recovery target remains intact.\n\n[Your Name]"
+            },
+            {
+              "id": "fm1_2",
+              "title": "The CSV Slop (Format Failure)",
+              "symptom": "AI returns nonsense like Discrepancy: $0.00 for every line item despite known errors",
+              "rootCause": "ERP CSV has merged cells or headers shifting by carrier. AI looking for Base Rate but reading Driver Phone Number column due to misalignment",
+              "diagnostics": [
+                "Open invoice CSV in Excel",
+                "Blank rows at top?",
+                "Does Total Charge column move from Column G to J by carrier?",
+                "If yes: data mapping issue"
+              ],
+              "recovery": {
+                "immediate": "Manually clean top 20 CSV rows to provide clean template",
+                "shortTerm": "Request Flat File from IT - no headers, no sub-totals, just raw consistent schema"
+              }
+            },
+            {
+              "id": "fm1_3",
+              "title": "Carrier Blacklisting (Political Friction)",
+              "symptom": "Your favorite regional carrier threatens to stop taking loads - robot is nickel-and-diming for $12 errors",
+              "rootCause": "AI too efficient catching legitimate $12 errors you used to ignore as cost of business. Carrier views this as breach of partnership trust",
+              "diagnostics": [
+                "Is dispute volume >15% of total invoices?",
+                "Are disputes primarily for amounts <$25?",
+                "If yes: Threshold problem"
+              ],
+              "recovery": {
+                "immediate": "Set Dispute Floor - only flag >$50 OR >5% of invoice total",
+                "shortTerm": "Host Transparency Call with carrier - explain mutual data error alignment, avoid squeeze narrative"
+              }
+            }
+          ],
+          "roi": "$235,000 annual recovery | 1.8 month payback | $720K maximum potential",
+          "keyLearnings": "30-40% of first implementations hit meaningful obstacles. This doesn't mean AI failed; it means data or thresholds need tuning. Fix CSV cleanliness and set mercy thresholds early to plug the leak without blowing up carrier relationships. The process itself - documenting what breaks and recovery playbooks - is when the investment earns 10x ROI.",
+          "nextSteps": "Request flat-file export of freight invoices for top-spend carrier over last 60 days. Run the prompt in Section 5. If it doesn't find at least $5,000 in errors, your carriers are perfect. If it does, you have political capital to scale.",
+          "prompts": [
+            {
+              "id": "ch1_p1_pr1",
+              "version": "1.1.v1",
+              "title": "The Freight Leak (Automated Audit & Dispute)",
+              "role": "Expert Freight Audit & Recovery Specialist",
+              "severity": "LOW (8.8/10)",
+              "platformCompatibility": ["ChatGPT", "Claude", "Perplexity", "Gemini", "DeepSeek", "Grok"],
+              "methodology": "5-Step Precision Framework",
+              "steps": [
+                "Data Integrity & Baseline Diagnostic",
+                "Rate Logic Verification (Chain-of-Thought Math)",
+                "Accessorial & Ghost Charge Audit",
+                "Output Generation & ROI Prioritization",
+                "Accuracy Validation & Confidence Score"
+              ],
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "masterContractRates": {
+                    "type": "string",
+                    "description": "CSV or Markdown: Carrier_Name, Service_Level, Origin_Zip, Dest_Zip, Base_Rate, Weight_Break, Min_Charge",
+                    "required": true
+                  },
+                  "itemizedInvoices": {
+                    "type": "string",
+                    "description": "CSV: Invoice_ID, Tracking_Number, Carrier_Name, Weight, Line_Item_Description, Line_Item_Amount, Total_Charge",
+                    "required": true
+                  },
+                  "surchargeSchedule": {
+                    "type": "string",
+                    "description": "Text: Fuel Surcharge %, Detention rates/hour, Liftgate fees, Residential rules",
+                    "required": true
+                  }
+                }
+              },
+              "dataQualityWarning": "Analysis requires >90% line-item completeness. If Total_Charge doesn't match sum of Line_Item_Amounts, that invoice is flagged Corrupt and excluded from recovery totals to prevent damaging carrier relationships.",
+              "assumptions": [
+                "ASMP-LSC-004: Freight invoice error rates average 6% in this segment",
+                "ASMP-LSC-004-01: 35% recovery rate of identified errors is conservative first-90-day target",
+                "ASMP-LSC-002: Detention fees often unapproved, occur due to internal dock delays not carrier fault"
+              ],
+              "outputs": [
+                "Executive Recovery Summary: Carrier, Total_Audited, Errors_Count, Recoverable_Amount, Leakage_%",
+                "Detailed Dispute Log: Invoice_ID, Tracking_Number, Error_Type, Invoiced_Amount, Contract_Amount, Variance, Logic_Reasoning",
+                "Professional Dispute Emails: Cites specific contract clause violated"
+              ],
+              "mockOutput": {
+                "executiveSummary": [
+                  {
+                    "carrier": "ABF Freight",
+                    "total_audited": "$124,000",
+                    "errors_found": 18,
+                    "recoverable_amount": "$7,440",
+                    "leakage_percent": "6.0%"
+                  },
+                  {
+                    "carrier": "XPO Logistics",
+                    "total_audited": "$89,500",
+                    "errors_found": 12,
+                    "recoverable_amount": "$5,200",
+                    "leakage_percent": "5.8%"
+                  }
+                ],
+                "disputeLog": [
+                  {
+                    "invoice_id": "INV-2024-05-001",
+                    "tracking_number": "TRK-87654",
+                    "error_type": "Unauthorized Residential Surcharge",
+                    "invoiced_amount": "$85.00",
+                    "contract_amount": "$0.00",
+                    "variance": "$85.00",
+                    "logic_reasoning": "Destination ZIP 94501 is commercial warehouse per Contract Clause 7.2 - GPS coordinates 37.8715N, 122.2727W. Contract prohibits residential surcharges to B2B locations. Reference: Page 12, Section 3.4"
+                  },
+                  {
+                    "invoice_id": "INV-2024-05-008",
+                    "tracking_number": "TRK-92001",
+                    "error_type": "Fuel Surcharge Overcharge",
+                    "invoiced_amount": "$450.00",
+                    "contract_amount": "$350.00",
+                    "variance": "$100.00",
+                    "logic_reasoning": "Applied 22% fuel index (West Coast rate) to Midwest lane (Contract rate 15%). Invoice date 05-15-2024 uses outdated index table. Correct calculation: $350 base × 1.15 = $402.50"
+                  }
+                ],
+                "summary": "Total disputed: $12,640 across 30 invoices | Confidence: 9.2/10 | Recommended immediate action: Contact carrier, cite specific clauses"
+              }
+            }
+          ]
+        },
+        {
+          "id": "ch1_p2",
+          "number": 2,
+          "title": "The Revenue Protector (SKU-Level Demand Signal Synthesis)",
+          "confidenceScore": 8.4,
+          "promptability": 9.0,
+          "budget": "$65K",
+          "timeline": "45 Days"
+        },
+        {
+          "id": "ch1_p3",
+          "number": 3,
+          "title": "The Dead-Walk Fix (Warehouse Orchestration)",
+          "confidenceScore": 8.2,
+          "promptability": 9.0,
+          "budget": "$85K",
+          "timeline": "60 Days"
+        },
+        {
+          "id": "ch1_p4",
+          "number": 4,
+          "title": "The Tier-N Blindspot (Supplier Risk Mapping)",
+          "confidenceScore": 7.9,
+          "promptability": 8.5,
+          "budget": "$120K",
+          "timeline": "90 Days"
+        },
+        {
+          "id": "ch1_p5",
+          "number": 5,
+          "title": "The Strategic Pivot (Global Scenario Modeling & Resilience)",
+          "confidenceScore": 6.5,
+          "promptability": 7.2,
+          "budget": "$250K",
+          "timeline": "6 Months"
+        }
+      ]
+    },
+    {
+      "id": "ch2",
+      "number": 2,
+      "title": "Education & EdTech - The Precision Learning Upgrade",
+      "intro": "Enrollment is declining. Students ask: Why pay $40K for a degree when I can learn anything on YouTube? Your board asks: Why is administrative overhead 32% of budget? Your best advisors are quitting because 80% of their time goes to transcript evaluation and financial aid queries instead of student success. The crisis is not failure of mission; it's structural irrelevance. You're managing a 19th-century cost model with 20th-century delivery for 21st-century students.",
+      "problems": [
+        {
+          "id": "ch2_p1",
+          "number": 1,
+          "title": "The Transcript Bottleneck (Automated Credit Evaluation)",
+          "confidenceScore": 8.9,
+          "promptability": 9.1,
+          "budget": "<$25K",
+          "timeline": "10 Days"
+        },
+        {
+          "id": "ch2_p2",
+          "number": 2,
+          "title": "The Retention Guard (Predictive Student Success)",
+          "confidenceScore": 8.2,
+          "promptability": 8.4,
+          "budget": "$40K",
+          "timeline": "21 Days"
+        },
+        {
+          "id": "ch2_p3",
+          "number": 3,
+          "title": "The Financial Aid Concierge (Complex Query Automation)",
+          "confidenceScore": 8.5,
+          "promptability": 9.0,
+          "budget": "$35K",
+          "timeline": "14 Days"
+        },
+        {
+          "id": "ch2_p4",
+          "number": 4,
+          "title": "The Curriculum-Market Match (Skills Mapping)",
+          "confidenceScore": 7.1,
+          "promptability": 8.2,
+          "budget": "$60K",
+          "timeline": "45 Days"
+        },
+        {
+          "id": "ch2_p5",
+          "number": 5,
+          "title": "The 1:1 Personalization Bet (Adaptive Content)",
+          "confidenceScore": 6.4,
+          "promptability": 6.8,
+          "budget": "$100K",
+          "timeline": "90 Days"
+        }
+      ]
+    },
+    {
+      "id": "ch3",
+      "number": 3,
+      "title": "HR & Talent Management - The Talent Velocity Upgrade",
+      "intro": "Your CFO sees high HR tech spending producing low velocity outcomes. Your recruiters spend 40% of time in LinkedIn browsing. Your managers dread annual reviews - administrative theater instead of career conversations. Your best talent leaves not because of money but because nobody knew they were unhappy until their resignation email arrived.",
+      "problems": [
+        {
+          "id": "ch3_p1",
+          "number": 1,
+          "title": "The Resume Sieve (Prompt-Based Shortlisting)",
+          "confidenceScore": 9.0,
+          "promptability": 9.2,
+          "budget": "<$20K",
+          "timeline": "7 Days"
+        },
+        {
+          "id": "ch3_p2",
+          "number": 2,
+          "title": "The Policy Pilot (Internal Benefits Concierge)",
+          "confidenceScore": 8.8,
+          "promptability": 9.1,
+          "budget": "<$15K",
+          "timeline": "5 Days"
+        },
+        {
+          "id": "ch3_p3",
+          "number": 3,
+          "title": "The Attrition Radar (Sentiment Synthesis)",
+          "confidenceScore": 7.6,
+          "promptability": 8.3,
+          "budget": "$50K",
+          "timeline": "30 Days"
+        },
+        {
+          "id": "ch3_p4",
+          "number": 4,
+          "title": "The Skills Mapper (Dynamic Job Architecture)",
+          "confidenceScore": 7.2,
+          "promptability": 8.1,
+          "budget": "$55K",
+          "timeline": "35 Days"
+        },
+        {
+          "id": "ch3_p5",
+          "number": 5,
+          "title": "The Review Catalyst (Performance Synthesis)",
+          "confidenceScore": 6.8,
+          "promptability": 7.5,
+          "budget": "$75K",
+          "timeline": "45 Days"
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "number": 4,
+      "title": "Manufacturing - The Prescriptive Floor",
+      "intro": "The Port of Long Beach is 100 miles away but might as well be on Mars. You have $7.2M annual downtime risk. Every Tuesday your scrap rate spikes $15,000 and you don't know why - Old Joe would know but he's retiring. Your 15% unplanned downtime represents $4.2M in lost capacity. Your digitalization strategy exists on a PowerPoint. Your floor runs on intuition and institutional memory.",
+      "problems": [
+        {
+          "id": "ch4_p1",
+          "number": 1,
+          "title": "The Maintenance Brain (Unstructured Log Synthesis)",
+          "confidenceScore": 9.2,
+          "promptability": 9.3,
+          "budget": "<$30K",
+          "timeline": "14 Days"
+        },
+        {
+          "id": "ch4_p2",
+          "number": 2,
+          "title": "The Scrap Sentinel (Root Cause Analysis)",
+          "confidenceScore": 7.9,
+          "promptability": 8.4,
+          "budget": "$45K",
+          "timeline": "21 Days"
+        },
+        {
+          "id": "ch4_p3",
+          "number": 3,
+          "title": "The Schedule Shifter (Dynamic Sequencing)",
+          "confidenceScore": 7.4,
+          "promptability": 8.0,
+          "budget": "$60K",
+          "timeline": "30 Days"
+        },
+        {
+          "id": "ch4_p4",
+          "number": 4,
+          "title": "The Old Joe Digital Twin (Knowledge Capture)",
+          "confidenceScore": 8.1,
+          "promptability": 8.7,
+          "budget": "$50K",
+          "timeline": "28 Days"
+        },
+        {
+          "id": "ch4_p5",
+          "number": 5,
+          "title": "The Vision Co-Pilot (Defect Diagnosis)",
+          "confidenceScore": 6.8,
+          "promptability": 7.2,
+          "budget": "$80K",
+          "timeline": "45 Days"
+        }
+      ]
+    },
+    {
+      "id": "ch5",
+      "number": 5,
+      "title": "Retail & E-Commerce - The Relevance Upgrade",
+      "intro": "Your return rate is 18% and climbing. Your product detail pages are outdated by launch week. Your inventory is either overstocked with dead weight or understocked when trends spike. You're stuck between broadcast marketing and precision relevance. Your competitive advantage isn't your products anymore; it's your ability to see signals faster.",
+      "problems": [
+        {
+          "id": "ch5_p1",
+          "number": 1,
+          "title": "The Return Reducer (Unstructured Review Synthesis)",
+          "confidenceScore": 8.8,
+          "promptability": 8.9,
+          "budget": "<$25K",
+          "timeline": "12 Days"
+        },
+        {
+          "id": "ch5_p2",
+          "number": 2,
+          "title": "The Content Factory (Scaleable Product Lifecycle)",
+          "confidenceScore": 9.1,
+          "promptability": 9.2,
+          "budget": "$40K",
+          "timeline": "18 Days"
+        },
+        {
+          "id": "ch5_p3",
+          "number": 3,
+          "title": "The Inventory Rebalancer (Trend Sensing)",
+          "confidenceScore": 7.9,
+          "promptability": 8.5,
+          "budget": "$55K",
+          "timeline": "25 Days"
+        },
+        {
+          "id": "ch5_p4",
+          "number": 4,
+          "title": "The Vendor Negotiator (Performance Audit)",
+          "confidenceScore": 8.2,
+          "promptability": 8.6,
+          "budget": "$50K",
+          "timeline": "21 Days"
+        },
+        {
+          "id": "ch5_p5",
+          "number": 5,
+          "title": "The Hyper-Personalizer (Generative CX)",
+          "confidenceScore": 6.7,
+          "promptability": 7.4,
+          "budget": "$90K",
+          "timeline": "60 Days"
+        }
+      ]
+    },
+    {
+      "id": "ch6",
+      "number": 6,
+      "title": "Healthcare & Pharma - The Precision Operating System",
+      "intro": "Your denial rate just hit 23%. Your trial enrollment is behind schedule. Your coders are buried in chart audits. Every day a claim sits in rework queue costs you interest. Your clinical teams are burnt out navigating a Byzantine compliance maze that should be automated. You have precision medicine data but analog processes.",
+      "problems": [
+        {
+          "id": "ch6_p1",
+          "number": 1,
+          "title": "The Denial Defender (Appeal Automation)",
+          "confidenceScore": 9.1,
+          "promptability": 9.2,
+          "budget": "<$40K",
+          "timeline": "14 Days"
+        },
+        {
+          "id": "ch6_p2",
+          "number": 2,
+          "title": "The Trial Scout (Patient-Trial Matching)",
+          "confidenceScore": 8.4,
+          "promptability": 8.8,
+          "budget": "$55K",
+          "timeline": "21 Days"
+        },
+        {
+          "id": "ch6_p3",
+          "number": 3,
+          "title": "The Chart Synthesizer (Risk Adjustment)",
+          "confidenceScore": 8.0,
+          "promptability": 8.3,
+          "budget": "$60K",
+          "timeline": "28 Days"
+        },
+        {
+          "id": "ch6_p4",
+          "number": 4,
+          "title": "The Safety Sentinel (Automated Pharmacovigilance)",
+          "confidenceScore": 7.7,
+          "promptability": 8.1,
+          "budget": "$65K",
+          "timeline": "35 Days"
+        },
+        {
+          "id": "ch6_p5",
+          "number": 5,
+          "title": "The Adherence Coach (Personalized Care)",
+          "confidenceScore": 6.8,
+          "promptability": 7.6,
+          "budget": "$85K",
+          "timeline": "45 Days"
+        }
+      ]
+    },
+    {
+      "id": "ch7",
+      "number": 7,
+      "title": "Finance & Banking - The Capital Intelligence Operating System",
+      "intro": "Your close takes 12 days and produces fiction. Your commercial onboarding is a 20-day torture of document scanning. Your fraud detection catches yesterday's schemes not tomorrow's. Your compliance overhead is a tax on innovation. You have access to unlimited data but are drowning in noise instead of swimming in signals.",
+      "problems": [
+        {
+          "id": "ch7_p1",
+          "number": 1,
+          "title": "The Narrative Closer (Automated Variance Commentary)",
+          "confidenceScore": 9.2,
+          "promptability": 9.3,
+          "budget": "<$30K",
+          "timeline": "10 Days"
+        },
+        {
+          "id": "ch7_p2",
+          "number": 2,
+          "title": "The KYC Fast-Pass (Document Audit Automation)",
+          "confidenceScore": 8.7,
+          "promptability": 8.9,
+          "budget": "$50K",
+          "timeline": "18 Days"
+        },
+        {
+          "id": "ch7_p3",
+          "number": 3,
+          "title": "The Credit Whisperer (Unstructured Loan Synthesis)",
+          "confidenceScore": 8.1,
+          "promptability": 8.5,
+          "budget": "$60K",
+          "timeline": "25 Days"
+        },
+        {
+          "id": "ch7_p4",
+          "number": 4,
+          "title": "The Policy Sentinel (Reg-Tech Mapping)",
+          "confidenceScore": 7.8,
+          "promptability": 8.2,
+          "budget": "$55K",
+          "timeline": "22 Days"
+        },
+        {
+          "id": "ch7_p5",
+          "number": 5,
+          "title": "The Fraud Signal (Unstructured Log Audit)",
+          "confidenceScore": 6.9,
+          "promptability": 7.9,
+          "budget": "$80K",
+          "timeline": "40 Days"
+        }
+      ]
+    },
+    {
+      "id": "ch8",
+      "number": 8,
+      "title": "Marketing & Sales - The Revenue Intelligence Upgrade",
+      "intro": "Your lead decay death spiral: 40% of first AI pilots fail on data quality. Your best case studies don't match your best markets. Your SDRs spend 4 hours per lead on research, missing the golden 5-minute window. Your content library is 65% unused. Your CRM is a tomb of data without insight. You're succeeding at broadcast marketing in a precision relationship era.",
+      "crisisAnchor": "The Lead Decay Death Spiral: Your marketing team spends $50K/month on Google and LinkedIn. Your average response to Contact Us form is 14 hours (ASMP-MKT-001). In that window, prospect visits competitors. By SDR callback, lead is cold. You're paying 70% Slow-Response Tax on marketing budget.",
+      "problems": [
+        {
+          "id": "ch8_p1",
+          "number": 1,
+          "title": "The Inbound Triage (Instant Prospect Context)",
+          "confidenceScore": 9.2,
+          "promptability": 9.8,
+          "budget": "<$25K",
+          "timeline": "10 Days"
+        },
+        {
+          "id": "ch8_p2",
+          "number": 2,
+          "title": "The Content Weaver (Case Study Personalizer)",
+          "confidenceScore": 8.8,
+          "promptability": 9.5,
+          "budget": "$40K",
+          "timeline": "21 Days"
+        },
+        {
+          "id": "ch8_p3",
+          "number": 3,
+          "title": "The Churn Radar (Engagement Synthesis)",
+          "confidenceScore": 7.9,
+          "promptability": 8.2,
+          "budget": "$55K",
+          "timeline": "30 Days"
+        },
+        {
+          "id": "ch8_p4",
+          "number": 4,
+          "title": "The Objection Crusher (Sales Playbook AI)",
+          "confidenceScore": 8.3,
+          "promptability": 9.0,
+          "budget": "$75K",
+          "timeline": "45 Days"
+        },
+        {
+          "id": "ch8_p5",
+          "number": 5,
+          "title": "The Autonomous Prospector (First-Touch AI)",
+          "confidenceScore": 6.5,
+          "promptability": 7.8,
+          "budget": "$150K",
+          "timeline": "90 Days"
+        }
+      ]
+    },
+    {
+      "id": "ch9",
+      "number": 9,
+      "title": "IT & Digital Transformation - The Architecture Upgrade",
+      "intro": "Your board demands AI Transformation. Your IT team says need 18-month architecture review. Translation: Last AI project failed, they got blamed, don't want another failure. You're trapped between board innovation demands and IT protection of $10M S/4HANA sunk cost. You have 80% of budget stuck in Keep-Lights-On. You have 150 unsanctioned SaaS apps in the shadows.",
+      "maintenanceMotat": "80% of your budget and 90% of team bandwidth consumed by Keep-Lights-On. You're paying Innovation Salaries for Janitorial Output. You are maintaining legacy servers, patching 10-year-old holes, managing Technical Debt accumulated like plaque in arteries.",
+      "problems": [
+        {
+          "id": "ch9_p1",
+          "number": 1,
+          "title": "The Log Sentinel (Automated Outage Diagnosis)",
+          "confidenceScore": 9.3,
+          "promptability": 9.7,
+          "budget": "<$30K",
+          "timeline": "14 Days"
+        },
+        {
+          "id": "ch9_p2",
+          "number": 2,
+          "title": "The Legacy Librarian (Automated Code & System Documentation)",
+          "confidenceScore": 8.9,
+          "promptability": 9.5,
+          "budget": "$45K",
+          "timeline": "21 Days"
+        },
+        {
+          "id": "ch9_p3",
+          "number": 3,
+          "title": "The Shadow Auditor (SaaS Spend & Risk Discovery)",
+          "confidenceScore": 8.6,
+          "promptability": 9.2,
+          "budget": "$35K",
+          "timeline": "14 Days"
+        },
+        {
+          "id": "ch9_p4",
+          "number": 4,
+          "title": "The Ticket Triage (ITSM Automation)",
+          "confidenceScore": 8.4,
+          "promptability": 9.0,
+          "budget": "$65K",
+          "timeline": "30 Days"
+        },
+        {
+          "id": "ch9_p5",
+          "number": 5,
+          "title": "The Cloud Optimizer (FinOps AI)",
+          "confidenceScore": 7.2,
+          "promptability": 8.1,
+          "budget": "$120K",
+          "timeline": "60 Days"
+        }
+      ]
+    },
+    {
+      "id": "ch10",
+      "number": 10,
+      "title": "Sustainability & NGO - The Impact Operating System",
+      "intro": "Your team is drowning in Data Archaeology (ASMP-SUS-001). You're spending 40% of time on reporting compliance instead of impact delivery. Donors demand Granular Proof. Your field data is trapped in PDFs and WhatsApp messages. You're losing $220K in funding due to Evidence Latency (ASMP-SUS-002). You're losing 15-20% of potential recurring funding inability to prove impact. You're Green-hushing - under-reporting - because cost of proving sustainability claims is too high (ASMP-SUS-005).",
+      "impactParadox": "The more Good you do, the more Paperwork you create. Donors demand documentation ensuring accountability. More documentation requires more staff. More staff increases Overhead Ratio. Higher overhead makes you look Inefficient to donors. Systems ensuring integrity prevent impact.",
+      "problems": [
+        {
+          "id": "ch10_p1",
+          "number": 1,
+          "title": "The Report Automator (Automated ESG/Donor Drafting)",
+          "confidenceScore": 9.3,
+          "promptability": 9.8,
+          "budget": "<$30K",
+          "timeline": "14 Days"
+        },
+        {
+          "id": "ch10_p2",
+          "number": 2,
+          "title": "The Grant Weaver (Multi-Donor Personalization)",
+          "confidenceScore": 8.8,
+          "promptability": 9.5,
+          "budget": "$45K",
+          "timeline": "21 Days"
+        },
+        {
+          "id": "ch10_p3",
+          "number": 3,
+          "title": "The Scope 3 Detective (Unstructured Supplier Audit)",
+          "confidenceScore": 8.1,
+          "promptability": 8.8,
+          "budget": "$65K",
+          "timeline": "35 Days"
+        },
+        {
+          "id": "ch10_p4",
+          "number": 4,
+          "title": "The Impact Auditor (Field Log Synthesis)",
+          "confidenceScore": 7.9,
+          "promptability": 9.1,
+          "budget": "$55K",
+          "timeline": "30 Days"
+        },
+        {
+          "id": "ch10_p5",
+          "number": 5,
+          "title": "The Scenario Modeler (Climate Risk & Strategic Pivot)",
+          "confidenceScore": 6.5,
+          "promptability": 7.4,
+          "budget": "$150K",
+          "timeline": "90 Days",
+          "detail": "HIGH ERROR SEVERITY (6.5/10). Engineered using 3-Step FALLBACK Diagnostic to identify if organization has data granularity for climate risk modeling before high-cost TCFD consulting engagement. Determines infrastructure readiness (geospatial precision, financial linkage) for quantitative modeling. "
+        }
+      ]
+    }
+  ],
+  "asmpReferences": {
+    "ASMP-LSC-001": "60% of planner time is human middleware copying data between systems (Gartner Supply Chain Survey 2024)",
+    "ASMP-LSC-002": "Mid-market companies average $420K annual detention fees due to warehouse-carrier coordination lag (Logistics Management Survey 2025)",
+    "ASMP-LSC-003": "Decision Gap - time between disruption event and corrective action - averages 14.2 hours without AI orchestration (MIT Supply Chain Review 2024)",
+    "ASMP-LSC-004": "6% of freight invoices contain errors (Aberdeen Group Logistics Report 2023, n=500 companies)",
+    "ASMP-LSC-004-01": "35% recovery rate of identified errors is conservative target for first 90 days",
+    "ASMP-LSC-005": "12-18% fuel savings via dynamic routing at lower quartile (Aberdeen Group Logistics Report 2024)",
+    "ASMP-MKT-001": "14-hour average B2B response time to contact form (Harvard Business Review / InsideSales 2024)",
+    "ASMP-MKT-002": "Sales reps spend 4 hours per week on content/admin tasks (Forbes / Salesforce State of Sales 2024)",
+    "ASMP-MKT-003": "Leads contacted within 5 minutes are 21x more likely to enter pipeline vs 30+ minutes (LeadResponseManagement.org 2024)",
+    "ASMP-MKT-004": "12% demo-set lift via instant prospect research (Gong.ai Revenue Intelligence Report 2024)",
+    "ASMP-SUS-001": "40% of sustainability staff time spent on Data Archaeology for reporting (Gartner ESG Today 2024)",
+    "ASMP-SUS-002": "15-20% funding loss due to Evidence Latency (Stanford Social Innovation 2024)",
+    "ASMP-SUS-004": "Mid-market ($100M-$500M) average $450K annually on ESG data collection (Oxford Economics / PwC 2024)",
+    "ASMP-SUS-005": "23% of companies Green-hush under-report due to cost and risk of proving sustainability claims (South Pole 2024)"
+  },
+  "methodology": {
+    "section1": "Operational Reality - The actual dollar and human cost, stated bluntly",
+    "section2": "Why Traditional Methods Fail - Structural limitations, not incompetence",
+    "section3": "Manager's Decision Point - 3 options: Do nothing, Traditional enhancement, AI-augmented",
+    "section4": "AI-Augmented Workflow - Monday 9:15 AM narrative showing exactly what changes",
+    "section5": "Execution Prompt - 2,200-2,400 word copy-paste ready prompt, platform agnostic",
+    "section6": "Business Case - All formulas shown, all variables sourced, conservative estimates, CFO-verifiable",
+    "section7": "Industry Context & Next Steps - What % of industry deployed, why you're still bleeding money",
+    "section8": "What Goes Wrong & How to Recover - 3-5 failure modes per problem with diagnostics and recovery playbooks"
+  },
+  "failureFramework": {
+    "symptom": "What you see (the alarm)",
+    "rootCause": "Why it happens (the mechanism)",
+    "diagnostics": "3-5 questions to confirm this is your issue",
+    "recovery": {
+      "immediate24hr": "Stop the bleeding",
+      "shortTerm": "Fix for next week",
+      "longTerm": "Prevent recurrence"
+    },
+    "emailTemplate": "Copy-paste message to CEO when this happens Friday 4 PM"
+  }
+}

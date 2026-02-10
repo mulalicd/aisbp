@@ -1,0 +1,28 @@
+{
+  "name": "aisbs",
+  "version": "1.0.0",
+  "description": "AI Solved Business Solutions - Closed RAG web app",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "dev": "concurrently --shell cmd.exe \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "test": "jest --passWithNoTests",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "keywords": [
+    "rag",
+    "react",
+    "nodejs",
+    "business",
+    "ai"
+  ],
+  "author": "AISBS",
+  "license": "ISC"
+}
