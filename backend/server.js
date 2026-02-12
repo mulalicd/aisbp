@@ -23,11 +23,17 @@ if (fs.existsSync(buildPath)) {
 // Load USTAV data (Real USTAV documents, not mock data)
 let ustav = null;
 try {
-  // Try to load real USTAV data first
-  let ustavPath = path.join(__dirname, '../data/ustav-real.json');
+  // Try to load data in this order (most specific first):
+  // 1) ustav.json (AI-enhanced complete extraction)
+  // 2) ustav-real.json (structured real data - fallback)
+  // 3) ustav-from-txt.json (imported raw book - legacy)
+  let ustavPath = path.join(__dirname, '../data/ustav.json');
   if (!fs.existsSync(ustavPath)) {
-    // Fallback to standard path if real data file doesn't exist
-    ustavPath = path.join(__dirname, '../data/ustav.json');
+    ustavPath = path.join(__dirname, '../data/ustav-real.json');
+  }
+  if (!fs.existsSync(ustavPath)) {
+    // Fallback to legacy path if previous files don't exist
+    ustavPath = path.join(__dirname, '../data/ustav-from-txt.json');
   }
   const ustavData = fs.readFileSync(ustavPath, 'utf-8');
   ustav = JSON.parse(ustavData);

@@ -1,371 +1,144 @@
-/* Main Layout */
-.app-layout {
-  display: flex;
-  width: 100%;
-  height: 100vh;
+/* AISBS - Minimal Emergency Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Sidebar Styling */
-.sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 3%;
-  height: 100vh;
-  background-color: #D32F2F;
-  z-index: 100;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Main Content */
-.main-content {
-  margin-left: 3%;
-  width: 97%;
-  height: 100vh;
-  overflow-y: auto;
-  background-color: #FFFFFF;
-  padding: 3rem;
+html {
+  scroll-behavior: smooth;
 }
 
-/* Dividers */
-.divider {
-  height: 1px;
-  background-color: #BDBDBD;
-  margin: 1.5rem 0;
+/* Remove any conflicting global styles */
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* Typography - Book Title */
-.book-title {
-  font-size: 4vw;
+a:hover {
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Typography - Ultra Bold Headings */
+h1, h2, h3 {
   font-weight: 900;
   letter-spacing: -0.02em;
   line-height: 1.1;
-  color: #000000;
-  white-space: pre-line;
-  margin-bottom: 1rem;
 }
 
-/* Subtitle */
-.book-subtitle {
-  font-size: 1.2vw;
-  color: #424242;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  font-weight: 500;
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
-/* Author */
-.book-author {
-  font-size: 1vw;
-  color: #000000;
-  font-weight: 600;
-  margin-top: 3rem;
+/* Chapter List Hover Effects */
+.chapter-item {
+  transition: all 0.2s ease-in-out;
 }
 
-/* Lists */
-.chapter-list,
-.problem-list {
-  list-style: none;
-  margin: 2rem 0;
+.chapter-item:hover {
+  transform: translateX(4px);
 }
 
-.chapter-list li,
-.problem-list li {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #BDBDBD;
-  font-size: 1.1vw;
-}
+/* Responsive Breakpoints */
 
-.chapter-list a,
-.problem-list a {
-  text-decoration: none;
-  color: #000000;
-  font-weight: 500;
-}
-
-.chapter-list a:hover,
-.problem-list a:hover {
-  text-decoration: underline;
-}
-
-/* Breadcrumbs */
-.breadcrumbs {
-  display: flex;
-  align-items: center;
-  margin-bottom: 2rem;
-  font-size: 0.95vw;
-  color: #424242;
-}
-
-.breadcrumbs a {
-  color: #000000;
-  text-decoration: none;
-  font-weight: 500;
-  margin-right: 0.5rem;
-}
-
-.breadcrumbs a:hover {
-  text-decoration: underline;
-}
-
-.breadcrumbs span {
-  margin: 0 0.5rem;
-  color: #424242;
-}
-
-/* Problem Section */
-.problem-section {
-  margin: 2rem 0;
-}
-
-.problem-section-title {
-  font-size: 1.5vw;
-  font-weight: 700;
-  color: #000000;
-  margin-bottom: 1rem;
-  margin-top: 1.5rem;
-}
-
-.problem-section p {
-  font-size: 1vw;
-  line-height: 1.8;
-  margin-bottom: 1rem;
-  color: #212121;
-}
-
-/* Prompts */
-.prompt-list {
-  margin: 2rem 0;
-  list-style: none;
-}
-
-.prompt-item {
-  padding: 1rem;
-  margin: 0.75rem 0;
-  border: 1px solid #E0E0E0;
-  background-color: #FAFAFA;
-  cursor: pointer;
-  border-radius: 2px;
-}
-
-.prompt-item:hover {
-  background-color: #F5F5F5;
-  border-color: #BDBDBD;
-}
-
-.prompt-item h4 {
-  font-size: 1.05vw;
-  font-weight: 600;
-  color: #000000;
-  margin-bottom: 0.5rem;
-}
-
-/* Split View for Prompt Execution */
-.split-view {
-  display: flex;
-  gap: 2rem;
-  margin: 2rem 0;
-  height: 600px;
-}
-
-.split-pane {
-  flex: 1;
-  border: 1px solid #BDBDBD;
-  padding: 1.5rem;
-  background-color: #FAFAFA;
-  overflow-y: auto;
-}
-
-.split-pane-left h3 {
-  font-size: 1.2vw;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-.split-pane-left pre {
-  font-size: 0.9vw;
-  background-color: #F5F5F5;
-  padding: 1rem;
-  border: 1px solid #E0E0E0;
-  border-radius: 2px;
-  overflow-x: auto;
-  line-height: 1.6;
-}
-
-.split-pane-right h3 {
-  font-size: 1.2vw;
-  font-weight: 700;
-  margin-bottom: 1rem;
-}
-
-/* Form Inputs */
-.input-group {
-  margin-bottom: 1rem;
-}
-
-.input-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  font-size: 0.95vw;
-}
-
-.input-group input,
-.input-group textarea,
-.input-group select {
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 0.9vw;
-  border: 1px solid #BDBDBD;
-  border-radius: 2px;
-  font-family: inherit;
-}
-
-.input-group textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-/* Buttons */
-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95vw;
-  font-weight: 600;
-  border: 1px solid #000000;
-  background-color: #FFFFFF;
-  color: #000000;
-  cursor: pointer;
-  border-radius: 2px;
-  transition: all 0.2s ease;
-}
-
-button:hover {
-  background-color: #000000;
-  color: #FFFFFF;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Output Display */
-.output-box {
-  background-color: #F5F5F5;
-  padding: 1.5rem;
-  border: 1px solid #E0E0E0;
-  border-radius: 2px;
-  font-size: 0.9vw;
-  line-height: 1.6;
-  overflow-x: auto;
-}
-
-.output-box pre {
-  margin: 0;
-  font-family: 'Courier New', monospace;
-}
-
-/* Loading & Error States */
-.loading {
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.1vw;
-  color: #424242;
-}
-
-.error {
-  background-color: #FFEBEE;
-  border: 1px solid #EF5350;
-  color: #C62828;
-  padding: 1rem;
-  border-radius: 2px;
-  margin: 1rem 0;
-  font-size: 0.95vw;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .main-content {
-    padding: 1.5rem;
+/* Mobile First - Base Styles (320px - 640px) */
+@media (max-width: 640px) {
+  /* Reduce padding on mobile */
+  .px-6 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
-
-  .book-title {
-    font-size: 6vw;
-  }
-
-  .book-subtitle {
-    font-size: 2vw;
-  }
-
-  .split-view {
+  
+  /* Stack contact info on mobile */
+  .contact-info-mobile {
     flex-direction: column;
-    height: auto;
+    align-items: flex-start;
   }
+}
 
-  .split-pane {
-    min-height: 400px;
+/* Small Tablets (641px - 768px) */
+@media (min-width: 641px) and (max-width: 768px) {
+  /* Adjust spacing for tablets */
+  .py-8 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
   }
+}
 
+/* Large Tablets / Small Laptops (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Optimize for landscape tablets */
+  .max-w-none {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+}
+
+/* Desktop (1025px - 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  /* Standard desktop view */
+  .max-w-none {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+/* Large Desktop (1441px+) */
+@media (min-width: 1441px) {
+  /* Constrain max width on very large screens */
+  .max-w-none {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}
+
+/* Print Styles */
+@media print {
   .sidebar {
-    width: 5%;
+    display: none;
   }
-
-  .main-content {
-    margin-left: 5%;
-    width: 95%;
+  
+  body {
+    background: white;
   }
 }
 
-/* Loading & Error States */
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-  font-size: 1.5rem;
-  color: #666;
+/* Accessibility - Focus Styles */
+a:focus,
+button:focus {
+  outline: 2px solid var(--primary-red);
+  outline-offset: 2px;
 }
 
-.loading::after {
-  content: '.';
-  animation: dots 1.5s steps(4, end) infinite;
+/* Reduced Motion for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
-@keyframes dots {
-  0%, 20% { content: '.'; }
-  40% { content: '..'; }
-  60%, 100% { content: '...'; }
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .chapter-item {
+    border: 2px solid var(--primary-black);
+  }
 }
 
-.error {
-  padding: 2rem;
-  margin: 2rem auto;
-  max-width: 800px;
-  background: #FFF3F3;
-  border: 2px solid #D32F2F;
-  border-radius: 8px;
-  color: #D32F2F;
-  font-size: 1.1rem;
-}
-
-/* Debug Info */
-.debug-info {
-  margin-top: 2rem;
-  padding: 1rem;
-  background: #f0f0f0;
-  border-radius: 4px;
-  font-size: 0.8rem;
-}
-
-.debug-info summary {
-  cursor: pointer;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.debug-info pre {
-  overflow: auto;
-  max-height: 300px;
-  padding: 1rem;
-  background: white;
-  border-radius: 4px;
+/* Dark Mode Consideration (Optional - if needed later) */
+@media (prefers-color-scheme: dark) {
+  /* Currently maintaining light theme only as per book design */
 }

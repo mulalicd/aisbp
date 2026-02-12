@@ -26,11 +26,11 @@ const createApiRoutes = (ustav) => {
    */
   router.get('/chapters', (req, res) => {
     const chapters = ustav.chapters.map((ch) => ({
-      id: ch.id,
+      id: ch.id || `ch${ch.number}`,
       number: ch.number,
       title: ch.title,
-      intro: ch.intro,
-      problemCount: ch.problems.length,
+      intro: ch.intro || '',
+      problemCount: (ch.problems || []).length,
     }));
     res.json(chapters);
   });
@@ -41,7 +41,16 @@ const createApiRoutes = (ustav) => {
    */
   router.get('/chapters/:chapterId', (req, res) => {
     const { chapterId } = req.params;
-    const chapter = ustav.chapters.find((ch) => ch.id === chapterId);
+    // Handle both id-based and number-based lookups
+    let chapter = ustav.chapters.find((ch) => ch.id === chapterId);
+    if (!chapter && /^ch\d+$/.test(chapterId)) {
+      const num = parseInt(chapterId.substring(2), 10);
+      chapter = ustav.chapters.find((ch) => ch.number === num);
+    }
+    if (!chapter) {
+      const num = parseInt(chapterId, 10);
+      chapter = ustav.chapters.find((ch) => ch.number === num);
+    }
 
     if (!chapter) {
       return res.status(404).json({ message: 'Chapter not found' });
@@ -49,8 +58,9 @@ const createApiRoutes = (ustav) => {
 
     res.json({
       ...chapter,
-      problems: chapter.problems.map((p) => ({
-        id: p.id,
+      id: chapter.id || `ch${chapter.number}`,
+      problems: (chapter.problems || []).map((p) => ({
+        id: p.id || `${chapter.number}.${p.number}`,
         number: p.number,
         title: p.title,
         promptCount: Array.isArray(p.prompts) ? p.prompts.length : 0,
@@ -65,35 +75,69 @@ const createApiRoutes = (ustav) => {
   router.get('/chapters/:chapterId/problems/:problemId', (req, res) => {
     try {
       const { chapterId, problemId } = req.params;
-      const chapter = ustav.chapters.find((ch) => ch.id === chapterId);
+      // Handle both id-based and number-based chapter lookups
+      let chapter = ustav.chapters.find((ch) => ch.id === chapterId);
+      if (!chapter && /^ch\d+$/.test(chapterId)) {
+        const num = parseInt(chapterId.substring(2), 10);
+        chapter = ustav.chapters.find((ch) => ch.number === num);
+      }
+      if (!chapter) {
+        const num = parseInt(chapterId, 10);
+        chapter = ustav.chapters.find((ch) => ch.number === num);
+      }
 
       if (!chapter) {
         return res.status(404).json({ error: 'Chapter not found' });
       }
 
-      const problem = chapter.problems.find((p) => p.id === problemId);
+      // Find problem by id or by construct from chapter.problemNumber
+      let problem = (chapter.problems || []).find((p) => p.id === problemId);
+      if (!problem && /^\d+\.\d+$/.test(problemId)) {
+        // Try numeric format like "1.1"
+        problem = (chapter.problems || []).find((p) => p.id === problemId);
+      }
 
       if (!problem) {
         return res.status(404).json({ error: 'Problem not found' });
       }
 
-      // Ensure all required fields exist with defaults
+      // Handle both old structure (object sections) and new structure (array sections)
+      let sectionContent = '';
+      if (Array.isArray(problem.sections) && problem.sections.length > 0) {
+        // New parser format: sections is array, combine all text
+        sectionContent = problem.sections.map((s) => s.content || '').join('\n\n');
+      } else if (typeof problem.sections === 'object' && problem.sections) {
+        // Old format: sections as object, extract content
+        sectionContent = Object.values(problem.sections).filter((v) => v).join('\n\n');
+      }
+
+      // Helper: wrap string as object if needed
+      const wrapSection = (value) => {
+        if (!value) return null;
+        if (typeof value === 'string') return { content: value };
+        if (typeof value === 'object' && !Array.isArray(value)) return value;
+        return null;
+      };
+
+      // Map data fields to expected frontend fields
+      // Ensure all required fields exist with defaults - FIXED FIELD NAMES to match data
       const safeProblem = {
         id: problem.id,
         number: problem.number,
         title: problem.title || 'Untitled Problem',
         sections: {
-          operationalReality: problem.sections?.operationalReality || null,
-          whyTraditionalFails: problem.sections?.whyTraditionalFails || null,
-          managerDecisionPoint: problem.sections?.managerDecisionPoint || null,
-          aiWorkflow: problem.sections?.aiWorkflow || null,
-          executionPrompt: problem.sections?.executionPrompt || null,
-          businessCase: problem.sections?.businessCase || null,
-          industryContext: problem.sections?.industryContext || null,
-          failureModes: problem.sections?.failureModes || null
+          // Direct string mappings from problem object
+          operationalReality: wrapSection(problem.operationalReality || sectionContent),
+          whyTraditionalFails: wrapSection(problem.whyTraditionalMethodsFail), // Note: data field is whyTraditionalMethodsFail
+          managerDecisionPoint: wrapSection(problem.managerDecisionPoint || problem.managerDecisionOptions?.[0]?.option),
+          aiWorkflow: wrapSection(problem.aiWorkflow || (problem.roi ? `ROI: ${problem.roi}` : null)),
+          executionPrompt: wrapSection(problem.executionPrompt || problem.nextSteps),
+          businessCase: wrapSection(problem.businessCase),
+          industryContext: wrapSection(problem.industryContext || problem.keyLearnings)
+          // NOTE: failureModes should NOT be in sections - it goes at top level
         },
         prompts: Array.isArray(problem.prompts) ? problem.prompts : [],
-        businessCase: problem.businessCase || {},
+        businessCase: problem.businessCase || (sectionContent ? { summary: sectionContent } : {}),
         failureModes: Array.isArray(problem.failureModes) ? problem.failureModes : []
       };
 
