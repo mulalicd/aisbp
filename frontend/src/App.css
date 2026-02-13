@@ -37,19 +37,48 @@ body {
   background: var(--secondary);
   color: white;
   position: fixed;
+  left: 18px;
+  /* Offset for the Book Spine */
   height: 100vh;
   padding: 2.5rem 2rem;
   overflow-y: auto;
-  z-index: 10;
+  z-index: 50;
   display: flex;
   flex-direction: column;
+  border-right: 1px solid var(--border);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .main-content {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  margin-left: calc(var(--sidebar-width) + 18px);
+  /* Sidebar width + Spine width */
+  min-height: 100vh;
+  background-color: #ffffff;
   padding: 4rem;
   max-width: 1600px;
+  width: 100%;
+}
+
+/* Responsive Logic */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-110%);
+    /* Hide off-screen */
+    box-shadow: 10px 0 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    /* Slide in */
+  }
+
+  .main-content {
+    margin-left: 18px;
+    /* Remove sidebar margin */
+    padding: 2rem 1rem;
+    max-width: 100%;
+  }
 }
 
 /* Sidebar Styling */

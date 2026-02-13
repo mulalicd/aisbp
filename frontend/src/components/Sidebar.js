@@ -2,19 +2,27 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useUstav } from '../App';
 
-const Sidebar = () => {
+const Sidebar = ({ className, onClose }) => {
   const { ustav, loading } = useUstav();
 
+  const handleNavClick = () => {
+    if (onClose) onClose();
+  };
+
   return (
-    <aside className="sidebar">
-      <Link to="/" className="sidebar-logo">
+    <aside className={`sidebar ${className || ''}`}>
+      <Link to="/" className="sidebar-logo" onClick={handleNavClick}>
         AI SOLVED<br />BUSINESS<br />PROBLEMS
       </Link>
 
       <nav className="nav-container">
         <div className="nav-group">
           <span className="nav-label">Main</span>
-          <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+          <NavLink
+            to="/"
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+            onClick={handleNavClick}
+          >
             Dashboard
           </NavLink>
         </div>
@@ -29,6 +37,7 @@ const Sidebar = () => {
                 key={chapter.id}
                 to={`/chapter/${chapter.id}`}
                 className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                onClick={handleNavClick}
               >
                 {chapter.id.toUpperCase().replace('_', ' ')}
               </NavLink>
