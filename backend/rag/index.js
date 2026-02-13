@@ -29,12 +29,12 @@ async function executeRAG(query, userData, mode = 'mock', options = {}) {
 
     // STEP 2: Augment
     console.log(`[RAG] Step 2/3: Augmenting prompt with user data...`);
-    const augmentedPrompt = augment(prompt, userData);
+    const augmentedPrompt = augment(prompt, userData, context);
     console.log(`[RAG]   ✓ Augmented (${augmentedPrompt.length} chars)`);
 
     // STEP 3: Generate
     console.log(`[RAG] Step 3/3: Generating output in ${mode} mode...`);
-    const output = await generate(augmentedPrompt, prompt, mode, options);
+    const output = await generate(augmentedPrompt, prompt, mode, { ...options, context });
     console.log(`[RAG]   ✓ Generation complete`);
 
     // Return complete response
@@ -216,7 +216,7 @@ function getExecutionStats() {
 module.exports = {
   // Main pipeline
   executeRAG,
-  
+
   // Utilities
   validatePromptForExecution,
   getPromptInputRequirements,

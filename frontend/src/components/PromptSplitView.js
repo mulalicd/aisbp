@@ -4,10 +4,34 @@ const Amplifier = ({ metadata, output, mode }) => {
   // If we have no metadata, don't render amplifier unless we want a generic one
   if (!output && !metadata) return null;
 
-  // Generic stats simulation
-  const latency = metadata?.executionTime || '420ms';
-  const confidence = mode === 'mock' ? '100%' : '94.8%';
-  const risk = 'LOW';
+  // Domain-specific stats
+  const latency = output?.metrics?.latency || metadata?.executionTime || '420ms';
+  const confidence = output?.metrics?.confidence || (mode === 'mock' ? '100%' : '94.8%');
+  const efficiency = output?.metrics?.efficiency || (metadata?.tokenEstimate ? `~${metadata.tokenEstimate} toks` : 'Optimal');
+
+  // Dynamic Metrics Chart
+  const visualMetrics = output?.metrics?.visualMetrics || [
+    { label: 'Operational Velocity', value: 88, theme: 'info' },
+    { label: 'Strategic Alignment', value: 92, theme: 'success' }
+  ];
+
+  const getThemeClasses = (theme, value) => {
+    switch (theme?.toLowerCase() || 'info') {
+      case 'success':
+      case 'emerald':
+        return 'bg-gradient-to-r from-emerald-500 to-green-500';
+      case 'warning':
+      case 'amber':
+        return 'bg-gradient-to-r from-amber-500 to-orange-500';
+      case 'danger':
+      case 'red':
+        return 'bg-gradient-to-r from-red-500 to-rose-600';
+      case 'info':
+      case 'blue':
+      default:
+        return 'bg-gradient-to-r from-blue-500 to-indigo-600';
+    }
+  };
 
   return (
     <div className="amplifier-block mt-6 p-5 bg-slate-50 border border-slate-200 rounded-xl">
@@ -15,7 +39,7 @@ const Amplifier = ({ metadata, output, mode }) => {
         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
           <span>⚡</span> Executive Intelligence Amplifier
         </h4>
-        <span className="text-[10px] font-mono text-slate-400">v2.1.0</span>
+        <span className="text-[10px] font-mono text-slate-400">v2.2.0</span>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -35,32 +59,26 @@ const Amplifier = ({ metadata, output, mode }) => {
         </div>
         <div>
           <div className="text-[10px] font-bold text-slate-400 uppercase">Efficiency</div>
-          <div className="text-sm font-bold text-slate-700">
-            {metadata?.tokenEstimate ? `~${metadata.tokenEstimate} toks` : 'Optimal'}
-          </div>
+          <div className="text-sm font-bold text-slate-700">{efficiency}</div>
         </div>
       </div>
 
       {/* Visual Bar Chart */}
-      <div className="space-y-2">
-        <div>
-          <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
-            <span>Operational Velocity</span>
-            <span>88%</span>
+      <div className="space-y-3">
+        {visualMetrics.map((m, idx) => (
+          <div key={idx}>
+            <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+              <span>{m.label}</span>
+              <span>{m.value}%</span>
+            </div>
+            <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div
+                className={`h-full ${getThemeClasses(m.theme || m.color)}`}
+                style={{ width: `${m.value}%` }}
+              ></div>
+            </div>
           </div>
-          <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 w-[88%]"></div>
-          </div>
-        </div>
-        <div>
-          <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
-            <span>Strategic Alignment</span>
-            <span>92%</span>
-          </div>
-          <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-emerald-500 to-green-500 w-[92%]"></div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

@@ -119,8 +119,20 @@ function retrieveByKeyword(query, ustav) {
   // Search across all chapters and problems
   ustav.chapters.forEach((chapter, chIdx) => {
     chapter.problems.forEach((problem, pIdx) => {
-      // Search in problem title and description
-      const searchText = `${chapter.title} ${problem.title} ${problem.sections?.operationalReality || ''}`.toLowerCase();
+      // Search in chapter and problem fields
+      const searchFields = [
+        chapter.title,
+        chapter.intro,
+        chapter.strategicPatterns,
+        problem.title,
+        problem.sections?.operationalReality,
+        problem.sections?.businessCase,
+        problem.sections?.industryContext,
+        ...(problem.failureModes || []).map(fm => `${fm.title} ${fm.symptom}`)
+      ];
+
+      const searchText = searchFields.filter(f => !!f).join(' ').toLowerCase();
+
       const score = keywords.reduce((acc, keyword) => {
         return acc + (searchText.includes(keyword) ? 1 : 0);
       }, 0);

@@ -9,7 +9,14 @@
  * @param {Object} userData - User input data keyed by input1, input2, input3, etc
  * @returns {string} - Augmented prompt ready for LLM
  */
-function augment(prompt, userData) {
+/**
+ * Augment prompt template with user data
+ * @param {Object} prompt - Prompt object from retrieval
+ * @param {Object} userData - User input data keyed by input1, input2, input3, etc
+ * @param {Object} context - Optional context (chapter, problem)
+ * @returns {string} - Augmented prompt ready for LLM
+ */
+function augment(prompt, userData, context = {}) {
   // Step 1: Validate user data against inputSchema
   const validation = validateUserData(userData, prompt.inputSchema);
   if (!validation.valid) {
@@ -33,7 +40,7 @@ function augment(prompt, userData) {
   });
 
   // Step 3: Add metadata header
-  const header = buildExecutionContext(prompt);
+  const header = buildExecutionContext(prompt, context);
 
   return header + '\n\n' + augmentedPrompt;
 }
@@ -41,16 +48,40 @@ function augment(prompt, userData) {
 /**
  * Build execution context header
  */
-function buildExecutionContext(prompt) {
-  return `=== PROMPT EXECUTION CONTEXT ===
+function buildExecutionContext(prompt, context = {}) {
+  const chapter = context.chapter || {};
+  const problem = context.problem || {};
+
+  let header = `=== PROMPT EXECUTION CONTEXT ===
 Prompt ID: ${prompt.id}
 Title: ${prompt.title}
 Version: ${prompt.version}
 Role: ${prompt.role}
 Severity: ${prompt.severity}
-Execution Time: ${new Date().toISOString()}
-Platform: User will select (ChatGPT/Claude/Gemini/etc)
+Chapter: ${chapter.title || 'N/A'}\n`;
+
+  if (chapter.strategicPatterns) {
+    header += `Strategic Patterns:\n${chapter.strategicPatterns.substring(0, 300)}...\n`;
+  }
+
+  if (problem.sections?.operationalReality) {
+    header += `Operational Context:\n${problem.sections.operationalReality.substring(0, 200)}...\n`;
+  }
+
+  if (chapter.qualityVarianceNote) {
+    header += `Quality Variance Note:\n${chapter.qualityVarianceNote}\n`;
+  }
+
+  header += `
+=== AI RESPONSE PRECISION PROTOCOL (VIP) ===
+1. DEPTH: Responses must be exhaustive, technical, and data-rich.
+2. FORMATTING: Use professional headers, dividers, and structural Markdown (tables, nested lists).
+3. EVIDENCE: Every claim must be supported by (simulated) data, ROI calculations, or industry benchmarks.
+4. ACTIONABLE: End every response with a "Monday Morning Action Plan" for executive decision-makers.
+5. STANDARDS: Adhere to industrial standards (e.g., ASMP, CSCMP, HIPAA, SOX) where applicable.
 ================================`;
+
+  return header;
 }
 
 /**

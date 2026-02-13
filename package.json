@@ -9,7 +9,7 @@
     "start": "npm run build && node backend/server.js",
     "dev:frontend": "npm start --prefix frontend",
     "dev:backend": "npm run dev --prefix backend",
-    "dev": "npm run dev:backend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:with-frontend": "concurrently \"npm start --prefix frontend\" \"npm run dev --prefix backend\"",
     "dev:only-backend": "npm run dev --prefix backend",
     "test": "jest --passWithNoTests",
