@@ -621,3 +621,142 @@ body {
     height: auto;
   }
 }
+
+/* --- Added Styles for Executive View --- */
+
+/* 1. Problem View: Executive Prompts Emphasis */
+.executive-prompts-emphasized {
+  border: 1px solid rgba(225, 29, 72, 0.3) !important;
+  box-shadow: 0 4px 20px rgba(225, 29, 72, 0.08) !important;
+  background: white !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.executive-prompts-emphasized::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--primary);
+}
+
+/* 2. Prompt Execution: Interaction Wrapper */
+.console-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.console-output-area {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Chat Bubbles */
+.chat-message {
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.chat-message-content {
+  padding: 1.5rem;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.chat-message.user .chat-message-content {
+  background: #f1f5f9;
+  color: #1e293b;
+  border-bottom-right-radius: 4px;
+  margin-left: 2rem;
+}
+
+.chat-message.ai .chat-message-content {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  border-bottom-left-radius: 4px;
+  margin-right: 2rem;
+}
+
+.chat-role-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.chat-role-label.user {
+  color: #64748b;
+  text-align: right;
+}
+
+.chat-role-label.ai {
+  color: var(--primary);
+}
+
+/* Input Toggle */
+.data-source-toggle {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.toggle-option {
+  flex: 1;
+  text-align: center;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.toggle-option.active {
+  background: white;
+  color: #0f172a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* API Key Input */
+.api-key-section {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+}
+
+.api-key-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #fcd34d;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  font-family: monospace;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

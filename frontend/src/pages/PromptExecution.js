@@ -31,7 +31,7 @@ const PromptExecution = () => {
         mode,
       });
       setOutput(response.data);
-      return response.data.output;
+      return response.data;
     } catch (error) {
       console.error('[PromptExecution] API Error:', error.response?.data || error.message);
       throw new Error(error.response?.data?.message || error.message);

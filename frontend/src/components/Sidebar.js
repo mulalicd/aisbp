@@ -39,7 +39,7 @@ const Sidebar = ({ className, onClose }) => {
                 className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
                 onClick={handleNavClick}
               >
-                {chapter.id.toUpperCase().replace('_', ' ')}
+                {chapter.title}
               </NavLink>
             ))
           )}
