@@ -52,7 +52,7 @@ export const UstavProvider = ({ children }) => {
 function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <UstavProvider>
           <Layout>
             <Routes>
