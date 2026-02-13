@@ -11,7 +11,7 @@ function Home() {
   const chapters = ustav?.chapters || [];
 
   return (
-    <div className="max-w-[1400px] w-full mx-auto px-4 md:px-8 py-8 md:py-16 relative min-h-screen flex flex-col">
+    <div className="max-w-[1800px] w-full mx-auto px-4 md:px-8 py-8 md:py-16 relative min-h-screen flex flex-col">
 
       {/* Top Right Link - Responsive Positioning */}
       <div className="w-full flex justify-end mb-8 md:absolute md:top-8 md:right-8">

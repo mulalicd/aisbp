@@ -45,7 +45,7 @@ const PromptExecution = () => {
   ];
 
   return (
-    <div className="problem-view-container">
+    <div className="prompt-execution-wrapper">
       <header className="problem-header">
         <Breadcrumbs items={breadcrumbItems} />
         <div className="problem-meta">Intelligent Asset / Execution Controller</div>
