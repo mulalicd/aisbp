@@ -10,18 +10,18 @@ const PromptExecution = () => {
   const { ustav, loading: ustavLoading, error: ustavError } = useUstav();
   const [output, setOutput] = useState(null);
 
-  if (ustavLoading) return <div className="loading">Loading...</div>;
-  if (ustavError) return <div className="error">Error: {ustavError}</div>;
+  if (ustavLoading) return <div className="loading-container">Initializing Neural Workbench...</div>;
+  if (ustavError) return <div className="error-container">System Error: {ustavError}</div>;
   if (!ustav) return null;
 
   const chapter = ustav.chapters.find((ch) => ch.id === chapterId);
-  if (!chapter) return <div className="error">Chapter not found</div>;
+  if (!chapter) return <div className="error-container">Sector Chapter Not Found</div>;
 
   const problem = chapter.problems.find((p) => p.id === problemId);
-  if (!problem) return <div className="error">Problem not found</div>;
+  if (!problem) return <div className="error-container">Business Problem Not Found</div>;
 
   const prompt = problem.prompts.find((pr) => pr.id === promptId);
-  if (!prompt) return <div className="error">Prompt not found</div>;
+  if (!prompt) return <div className="error-container">Execution Prompt Not Found</div>;
 
   const handleExecute = async (inputs, mode) => {
     try {
@@ -33,6 +33,7 @@ const PromptExecution = () => {
       setOutput(response.data);
       return response.data.output;
     } catch (error) {
+      console.error('[PromptExecution] API Error:', error.response?.data || error.message);
       throw new Error(error.response?.data?.message || error.message);
     }
   };
@@ -44,15 +45,16 @@ const PromptExecution = () => {
   ];
 
   return (
-    <div>
-      <Breadcrumbs items={breadcrumbItems} />
-      <h2 className="book-title" style={{ fontSize: '1.8vw', marginBottom: '1rem' }}>
-        {prompt.title}
-      </h2>
-      <div className="divider" />
-      <p style={{ fontSize: '1vw', color: '#666', marginBottom: '1.5rem' }}>
-        Problem {problem.number}.{problem.number} in {chapter.title}
-      </p>
+    <div className="problem-view-container">
+      <header className="problem-header">
+        <Breadcrumbs items={breadcrumbItems} />
+        <div className="problem-meta">Intelligent Asset / Execution Controller</div>
+        <h1 className="problem-main-title">{prompt.title}</h1>
+        <p className="dashboard-subtitle">
+          Operationalizing Problem {problem.number} in the {chapter.title} Domain
+        </p>
+      </header>
+
       <PromptSplitView prompt={prompt} onExecute={handleExecute} />
     </div>
   );

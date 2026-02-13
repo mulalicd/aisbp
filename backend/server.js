@@ -45,12 +45,8 @@ try {
   process.exit(1);
 }
 
-// API Routes
+// API Routes (includes RAG execution)
 app.use('/api', apiRoutes(ustav));
-
-// RAG Routes (independent of main API routes)
-console.log(`✓ Initializing RAG System...`);
-app.use('/api', ragRoutes);
 
 // Serve React app for all other routes (SPA fallback)
 app.get('*', (req, res) => {

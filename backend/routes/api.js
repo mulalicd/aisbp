@@ -1,6 +1,8 @@
 const express = require('express');
 const multer = require('multer');
-const { generate } = require('../rag/index');
+const path = require('path');
+const fs = require('fs');
+const { executeRAG: generate } = require('../rag/index');
 const { buildPromptSchemas, validateInput } = require('../validation/schemas');
 
 // Setup multer for file uploads
@@ -120,24 +122,23 @@ const createApiRoutes = (ustav) => {
       };
 
       // Map data fields to expected frontend fields
-      // Ensure all required fields exist with defaults - FIXED FIELD NAMES to match data
+      const s = problem.sections || {};
+
       const safeProblem = {
         id: problem.id,
         number: problem.number,
         title: problem.title || 'Untitled Problem',
         sections: {
-          // Direct string mappings from problem object
-          operationalReality: wrapSection(problem.operationalReality || sectionContent),
-          whyTraditionalFails: wrapSection(problem.whyTraditionalMethodsFail), // Note: data field is whyTraditionalMethodsFail
-          managerDecisionPoint: wrapSection(problem.managerDecisionPoint || problem.managerDecisionOptions?.[0]?.option),
-          aiWorkflow: wrapSection(problem.aiWorkflow || (problem.roi ? `ROI: ${problem.roi}` : null)),
-          executionPrompt: wrapSection(problem.executionPrompt || problem.nextSteps),
-          businessCase: wrapSection(problem.businessCase),
-          industryContext: wrapSection(problem.industryContext || problem.keyLearnings)
-          // NOTE: failureModes should NOT be in sections - it goes at top level
+          operationalReality: wrapSection(s.operationalReality),
+          whyTraditionalFails: wrapSection(s.whyTraditionalFails || s.whyTraditionalMethodsFail),
+          managerDecisionPoint: wrapSection(s.managerDecisionPoint),
+          aiWorkflow: wrapSection(s.aiWorkflow),
+          executionPrompt: wrapSection(s.executionPrompt),
+          businessCase: wrapSection(s.businessCase),
+          industryContext: wrapSection(s.industryContext)
         },
         prompts: Array.isArray(problem.prompts) ? problem.prompts : [],
-        businessCase: problem.businessCase || (sectionContent ? { summary: sectionContent } : {}),
+        businessCase: problem.businessCase || {},
         failureModes: Array.isArray(problem.failureModes) ? problem.failureModes : []
       };
 
@@ -241,6 +242,41 @@ const createApiRoutes = (ustav) => {
       res.status(400).json({
         message: `File parsing error: ${err.message}`,
       });
+    }
+  });
+
+  /**
+   * GET /api/admin/reparse
+   * EMERGENCY: Trigger re-parsing of MD to JSON
+   */
+  router.get('/admin/reparse', (req, res) => {
+    try {
+      const parserPath = path.join(__dirname, '../scripts/fullParser.js');
+
+      // Step 1: Run the parser
+      delete require.cache[require.resolve(parserPath)];
+      require(parserPath);
+
+      // Step 2: HOT RELOAD the server's ustav data
+      const ustavPath = path.join(__dirname, '../../data/ustav.json');
+      const ustavData = fs.readFileSync(ustavPath, 'utf-8');
+      const newUstav = JSON.parse(ustavData);
+
+      // Update the reference held by the closure
+      Object.assign(ustav, newUstav);
+
+      // Step 3: Invalidate the RAG system cache
+      const { reloadUSTAV } = require('../rag/retrieval');
+      reloadUSTAV();
+
+      res.json({
+        message: 'Reparsing triggered and all caches hot-reloaded successfully',
+        metadata: ustav.metadata,
+        timestamp: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error('Reparse error:', err);
+      res.status(500).json({ error: err.message, stack: err.stack });
     }
   });
 

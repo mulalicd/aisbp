@@ -12,7 +12,7 @@ let ustavData = null;
 
 function loadUSTAV() {
   if (ustavData) return ustavData;
-  
+
   const ustavPath = path.join(__dirname, '../../data/ustav.json');
   try {
     const raw = fs.readFileSync(ustavPath, 'utf-8');
@@ -23,6 +23,11 @@ function loadUSTAV() {
     console.error('[RAG] Failed to load USTAV data:', error.message);
     return null;
   }
+}
+
+function reloadUSTAV() {
+  ustavData = null;
+  return loadUSTAV();
 }
 
 /**
@@ -250,5 +255,6 @@ module.exports = {
   getPromptsByProblem,
   getIndex,
   validatePrompt,
-  loadUSTAV
+  loadUSTAV,
+  reloadUSTAV
 };

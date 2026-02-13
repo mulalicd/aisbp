@@ -21,7 +21,7 @@ function augment(prompt, userData) {
   // Step 2: Interpolate input placeholders
   Object.keys(userData).forEach((inputKey) => {
     const placeholders = augmentedPrompt.match(/\[User:\s*Paste Data\]/g);
-    
+
     if (placeholders && placeholders.length > 0) {
       // Replace first occurrence only (one per input)
       const formattedData = formatDataForPrompt(userData[inputKey]);
@@ -62,6 +62,11 @@ Platform: User will select (ChatGPT/Claude/Gemini/etc)
 function validateUserData(userData, inputSchema) {
   const errors = [];
 
+  // If no schema defined, accept all data
+  if (!inputSchema || typeof inputSchema !== 'object' || Object.keys(inputSchema).length === 0) {
+    return { valid: true, errors: [] };
+  }
+
   // Check if all required inputs are provided
   Object.keys(inputSchema).forEach((inputKey) => {
     const schema = inputSchema[inputKey];
@@ -75,7 +80,7 @@ function validateUserData(userData, inputSchema) {
     // Validate required columns for CSV/Table inputs
     if (schema.requiredColumns && schema.requiredColumns.length > 0) {
       const dataKeys = extractDataKeys(data);
-      const missingColumns = schema.requiredColumns.filter(col => 
+      const missingColumns = schema.requiredColumns.filter(col =>
         !dataKeys.some(dk => dk.toLowerCase() === col.toLowerCase())
       );
 
@@ -88,7 +93,7 @@ function validateUserData(userData, inputSchema) {
     if (schema.requiredFormat) {
       const formatLower = schema.requiredFormat.toLowerCase();
       const dataLower = (typeof data === 'string' ? data : JSON.stringify(data)).toLowerCase();
-      
+
       // Basic format checks
       if (formatLower.includes('csv') && !dataLower.includes(',') && data.length > 50) {
         errors.push(`${inputKey} appears not to be CSV format (missing commas)`);
@@ -214,6 +219,11 @@ function createTestData(inputSchema) {
  */
 function getInputInstructions(prompt) {
   const instructions = [];
+
+  // If no schema, return empty instructions
+  if (!prompt.inputSchema || typeof prompt.inputSchema !== 'object') {
+    return instructions;
+  }
 
   Object.entries(prompt.inputSchema).forEach(([key, schema]) => {
     instructions.push({

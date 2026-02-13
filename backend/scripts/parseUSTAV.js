@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const BOOK_PATH = path.join(__dirname, '../../AI SOLVED BUSINESS PROBLEMS.txt');
+const BOOK_PATH = path.join(__dirname, '../../book_parsed.md');
 const OUTPUT_PATH = path.join(__dirname, '../../data/ustav.json');
 
 /**
@@ -51,8 +51,8 @@ class USTAVParser {
     }
 
     const ch2Start = this.bookText.indexOf('\n\nCHAPTER 2', ch1Start);
-    const chapterText = ch2Start === -1 
-      ? this.bookText.substring(ch1Start) 
+    const chapterText = ch2Start === -1
+      ? this.bookText.substring(ch1Start)
       : this.bookText.substring(ch1Start, ch2Start);
 
     console.log(`[PARSER] Found Chapter 1 text: ${chapterText.length} characters`);
@@ -94,7 +94,7 @@ class USTAVParser {
    */
   parseProblem(chapterText, problemNum) {
     const problemId = `1.${problemNum}`;
-    
+
     // Find problem boundaries
     const problemStart = chapterText.indexOf(`PROBLEM ${problemId}\n`);
     if (problemStart === -1) {
@@ -173,7 +173,7 @@ class USTAVParser {
     let sectionEnd = Math.min(...[nextSectionStart, nextProblemStart, problemText.length].filter(x => x > 0));
 
     const sectionText = problemText.substring(sectionStart, sectionEnd);
-    
+
     // Remove section header and clean up
     return sectionText
       .replace(new RegExp(`^SECTION ${sectionNum}\\n`), '')
@@ -273,7 +273,7 @@ class USTAVParser {
         name: inputLabel.trim(),
         systemSource: sourceMatch ? sourceMatch[1].trim() : 'User Input',
         requiredFormat: formatMatch ? formatMatch[1].trim() : 'CSV or Text',
-        requiredColumns: columnsMatch 
+        requiredColumns: columnsMatch
           ? columnsMatch[1].split(/[,;]\s*/).map(c => c.trim().replace(/`/g, ''))
           : [],
         example: this.extractExample(inputDesc)
@@ -304,7 +304,7 @@ class USTAVParser {
       requirements.push({
         deliverable: parseInt(match[1]),
         name: match[2].trim(),
-        priority: match[3].includes('Priority:') 
+        priority: match[3].includes('Priority:')
           ? match[3].match(/Priority:\s*([^\n]+)/)[1].trim()
           : 'MEDIUM',
         format: match[3].includes('Format:')
@@ -340,7 +340,7 @@ class USTAVParser {
     const platformMatch = promptBlock.match(
       /\*\*Platform Compatibility:\*\*\s*([^\n]+)/
     );
-    
+
     if (!platformMatch) {
       return ['ChatGPT', 'Claude', 'Gemini'];
     }
@@ -467,7 +467,7 @@ class USTAVParser {
         extractedAt: new Date().toISOString(),
         totalChapters: chapters.length,
         totalProblems: chapters.reduce((sum, ch) => sum + ch.problems.length, 0),
-        totalPrompts: chapters.reduce((sum, ch) => 
+        totalPrompts: chapters.reduce((sum, ch) =>
           sum + ch.problems.reduce((s, p) => s + p.prompts.length, 0), 0
         )
       },
@@ -501,7 +501,7 @@ class USTAVParser {
         chaptersCompleted: chapterNum,
         totalChapters: 10,
         totalProblems: chapters.reduce((sum, ch) => sum + ch.problems.length, 0),
-        totalPrompts: chapters.reduce((sum, ch) => 
+        totalPrompts: chapters.reduce((sum, ch) =>
           sum + ch.problems.reduce((s, p) => s + p.prompts.length, 0), 0
         )
       },
@@ -524,7 +524,7 @@ class USTAVParser {
   parseWithProgress(chapterNum) {
     console.log(`\n[PARSER] 📖 Parsing Chapter ${chapterNum}...`);
     const startTime = Date.now();
-    
+
     // Determine which parsing method to use
     let chapter;
     if (chapterNum === 1) {
@@ -557,7 +557,7 @@ class USTAVParser {
     console.log(`[PARSER]     - Problems: ${chapter.problems.length}`);
     console.log(`[PARSER]     - Prompts: ${totalPrompts}`);
     console.log(`[PARSER]     - Failure Modes: ${totalFailureModes}`);
-    
+
     return chapter;
   }
 
@@ -582,7 +582,7 @@ class USTAVParser {
     // Parse each chapter with checkpoint
     for (let chNum = 1; chNum <= maxChapters; chNum++) {
       console.log(`\n[PARSER] [${chNum}/${maxChapters}] Processing...`);
-      
+
       const chapter = this.parseWithProgress(chNum);
       if (!chapter) {
         console.error(`[PARSER] ✗ Failed to parse Chapter ${chNum}`);

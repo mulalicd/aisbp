@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 function ChapterView() {
   const { chapterId } = useParams();
@@ -11,183 +12,79 @@ function ChapterView() {
   useEffect(() => {
     axios.get(`/api/chapters/${chapterId}`)
       .then(response => {
-        console.log('Chapter data:', response.data);
         setChapter(response.data);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Error fetching chapter:', err);
         setError(err.message);
         setLoading(false);
       });
   }, [chapterId]);
 
-  if (loading) {
-    return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>Loading chapter...</h2>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ padding: '2rem', textAlign: 'center', color: 'red' }}>
-        <h2>Error: {error}</h2>
-        <Link to="/" style={{ color: '#1976D2' }}>← Back to Home</Link>
-      </div>
-    );
-  }
-
-  if (!chapter) {
-    return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>Chapter not found</h2>
-        <Link to="/" style={{ color: '#1976D2' }}>← Back to Home</Link>
-      </div>
-    );
-  }
+  if (loading) return <div className="loading-container">Synchronizing Chapter Intelligence...</div>;
+  if (error) return <div className="error-container">Sync Error: {error}</div>;
+  if (!chapter) return <div className="error-container">Domain not found in workbook.</div>;
 
   return (
-    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Breadcrumbs */}
-      <div style={{ marginBottom: '20px', fontSize: '14px', color: '#666' }}>
-        <Link to="/" style={{ color: '#1976D2', textDecoration: 'none' }}>Home</Link>
-        {' '} / {' '}
-        <span style={{ color: '#333' }}>Chapter {chapter.number}</span>
-      </div>
+    <div className="chapter-view-container">
+      <header className="problem-header">
+        <div className="problem-meta">Sector Overview / Chapter {chapter.number}</div>
+        <h1 className="problem-main-title">{chapter.title}</h1>
+        {chapter.subtitle && <p className="dashboard-subtitle">{chapter.subtitle}</p>}
+      </header>
 
-      {/* Chapter Header */}
-      <h1 style={{ 
-        fontSize: '48px',
-        fontWeight: '900',
-        marginBottom: '10px',
-        color: 'black'
-      }}>
-        Chapter {chapter.number}
-      </h1>
-      
-      <h2 style={{
-        fontSize: '32px',
-        fontWeight: '700',
-        marginBottom: '20px',
-        color: '#424242'
-      }}>
-        {chapter.title}
-      </h2>
-
-      {chapter.subtitle && (
-        <h3 style={{
-          fontSize: '24px',
-          fontWeight: '500',
-          marginBottom: '30px',
-          color: '#666'
-        }}>
-          {chapter.subtitle}
-        </h3>
-      )}
-
-      {/* Chapter Introduction */}
       {chapter.intro && (
-        <div style={{
-          fontSize: '16px',
-          lineHeight: '1.6',
-          color: '#333',
-          marginBottom: '40px',
-          padding: '20px',
-          backgroundColor: '#F5F5F5',
-          borderLeft: '4px solid #D32F2F'
-        }}>
-          <p style={{ whiteSpace: 'pre-wrap' }}>{chapter.intro}</p>
-        </div>
+        <section className="problem-section-card" style={{ background: '#f8fafc', borderLeft: '4px solid var(--primary)' }}>
+          <h2 className="nav-label">Executive Brief</h2>
+          <div className="markdown-content">
+            <p style={{ whiteSpace: 'pre-wrap' }}>{chapter.intro}</p>
+          </div>
+        </section>
       )}
 
-      {/* Divider */}
-      <hr style={{ 
-        border: 'none',
-        borderTop: '2px solid #BDBDBD',
-        margin: '40px 0'
-      }} />
-
-      {/* Problems List */}
-      <h3 style={{
-        fontSize: '28px',
-        fontWeight: '700',
-        marginBottom: '20px',
-        color: 'black'
-      }}>
-        Problems
-      </h3>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {(chapter.problems || []).map((problem) => (
-          <Link
-            key={problem.id}
-            to={`/chapter/${chapterId}/problem/${problem.id}`}
-            style={{
-              display: 'block',
-              padding: '25px',
-              backgroundColor: '#F5F5F5',
-              borderLeft: '4px solid transparent',
-              textDecoration: 'none',
-              color: 'inherit',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderLeftColor = '#D32F2F';
-              e.currentTarget.style.backgroundColor = '#EEEEEE';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderLeftColor = 'transparent';
-              e.currentTarget.style.backgroundColor = '#F5F5F5';
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+      <section className="problems-section" style={{ marginTop: '4rem' }}>
+        <h2 className="section-title">Strategic Challenges</h2>
+        <div className="problems-grid-modern" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100%, 1fr))', gap: '1.5rem' }}>
+          {(chapter.problems || []).map((problem) => (
+            <Link
+              key={problem.id}
+              to={`/chapter/${chapterId}/problem/${problem.id}`}
+              className="chapter-luxury-card"
+              style={{ flexDirection: 'row', alignItems: 'center', gap: '2rem', padding: '1.5rem 2.5rem' }}
+            >
               <div style={{
-                width: '60px',
-                height: '60px',
-                backgroundColor: '#D32F2F',
+                width: '80px',
+                height: '80px',
+                background: 'var(--secondary)',
                 color: 'white',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '28px',
-                fontWeight: 'bold',
-                borderRadius: '4px',
+                fontSize: '2rem',
+                fontWeight: '900',
+                borderRadius: '16px',
                 flexShrink: 0
               }}>
                 {problem.number}
               </div>
-              
+
               <div style={{ flex: 1 }}>
-                <h4 style={{
-                  fontSize: '22px',
-                  fontWeight: 'bold',
-                  marginBottom: '8px',
-                  color: 'black'
-                }}>
-                  Problem {chapter.number}.{problem.number}: {problem.title}
+                <div className="chapter-card-meta">Problem {chapter.number}.{problem.number}</div>
+                <h4 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#0f172a', marginBottom: '0.5rem' }}>
+                  {problem.title}
                 </h4>
-                
                 {problem.sections?.operationalReality?.content && (
-                  <p style={{
-                    fontSize: '14px',
-                    color: '#666',
-                    margin: 0,
-                    lineHeight: '1.5'
-                  }}>
-                    {problem.sections.operationalReality.content.substring(0, 150)}...
+                  <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: 0 }}>
+                    {problem.sections.operationalReality.content.substring(0, 180)}...
                   </p>
                 )}
               </div>
 
-              <div style={{ fontSize: '24px', color: '#999' }}>
-                →
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+              <div className="arrow" style={{ fontSize: '1.5rem', color: 'var(--primary)' }}>→</div>
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

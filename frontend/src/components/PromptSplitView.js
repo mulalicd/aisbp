@@ -25,74 +25,147 @@ const PromptSplitView = ({ prompt, onExecute }) => {
       const result = await onExecute(inputs, mode);
       setOutput(result);
     } catch (err) {
+      console.error('[PromptSplitView] Execution error:', err);
       setError(err.message || 'Execution failed');
     } finally {
       setLoading(false);
     }
   };
 
+  // If inputSchema is missing, we still want a button at least
+  const hasSchema = prompt.inputSchema?.properties && Object.keys(prompt.inputSchema.properties).length > 0;
+
   return (
-    <div className="split-view">
-      {/* Left Pane: Prompt */}
-      <div className="split-pane split-pane-left">
-        <h3>{prompt.title}</h3>
-        <div className="divider" />
-        <pre>{prompt.code}</pre>
-      </div>
-
-      {/* Right Pane: Input & Output */}
-      <div className="split-pane split-pane-right">
-        <h3>Execution</h3>
-        <div className="divider" />
-
-        <form onSubmit={handleExecute}>
-          <div className="input-group">
-            <label>Mode</label>
-            <select value={mode} onChange={(e) => setMode(e.target.value)}>
-              <option value="mock">Mock (Deterministic)</option>
-              <option value="llm">LLM (if available)</option>
-            </select>
+    <div className="workbench-container">
+      <div className="split-view">
+        {/* Left Pane: The Intelligence Blueprint */}
+        <div className="split-pane">
+          <div className="pane-header">
+            <span className="pane-title">Reference Blueprint</span>
+            <span className={`status-badge ${prompt.severity?.toLowerCase() || 'low'}`}>
+              Impact: {prompt.severity || 'Standard'}
+            </span>
           </div>
-
-          {prompt.inputSchema?.properties &&
-            Object.entries(prompt.inputSchema.properties).map(([key, schema]) => (
-              <div key={key} className="input-group">
-                <label>{key}</label>
-                {schema.type === 'array' ? (
-                  <textarea
-                    name={key}
-                    value={inputs[key] || ''}
-                    onChange={handleInputChange}
-                    placeholder={`Enter JSON array for ${key}`}
-                  />
-                ) : (
-                  <input
-                    type={schema.type === 'number' ? 'number' : 'text'}
-                    name={key}
-                    value={inputs[key] || ''}
-                    onChange={handleInputChange}
-                    placeholder={key}
-                    required={prompt.inputSchema.required?.includes(key)}
-                  />
-                )}
-              </div>
-            ))}
-
-          <button type="submit" disabled={loading}>
-            {loading ? 'Executing...' : 'Execute'}
-          </button>
-        </form>
-
-        {error && <div className="error">{error}</div>}
-
-        {output && (
-          <div style={{ marginTop: '1.5rem' }}>
-            <h4 style={{ marginBottom: '0.5rem' }}>Output</h4>
-            <div className="output-box">
-              <pre>{JSON.stringify(output, null, 2)}</pre>
+          <div className="pane-content">
+            <div className="prompt-display">
+              {prompt.content || "No blueprint content available."}
+            </div>
+            <div style={{ marginTop: '1.5rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+              <strong>VERSION:</strong> {prompt.version || '1.0.0'} |
+              <strong> PLATFORM:</strong> Universal LLM Compatibility
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Right Pane: Live Execution */}
+        <div className="split-pane">
+          <div className="pane-header">
+            <span className="pane-title">Execution Console</span>
+            <span className={`status-badge ${mode === 'llm' ? 'live' : 'mock'}`}>
+              {mode === 'llm' ? 'Live LLM' : 'Mock Simulator'}
+            </span>
+          </div>
+          <div className="pane-content">
+            <form onSubmit={handleExecute} className="execution-form">
+              <div className="input-group">
+                <label>Processor Mode</label>
+                <select value={mode} onChange={(e) => setMode(e.target.value)}>
+                  <option value="mock">Simulation Mode (Deterministic)</option>
+                  <option value="llm">Production Mode (Gemini/OpenAI)</option>
+                </select>
+              </div>
+
+              {hasSchema ? (
+                Object.entries(prompt.inputSchema.properties).map(([key, schema]) => (
+                  <div key={key} className="input-group">
+                    <label>{key} {prompt.inputSchema.required?.includes(key) && '*'}</label>
+                    {schema.type === 'array' || key.toLowerCase().includes('data') || key.toLowerCase().includes('text') ? (
+                      <textarea
+                        name={key}
+                        value={inputs[key] || ''}
+                        onChange={handleInputChange}
+                        placeholder={`Provide ${key}...`}
+                        required={prompt.inputSchema.required?.includes(key)}
+                      />
+                    ) : (
+                      <input
+                        type={schema.type === 'number' ? 'number' : 'text'}
+                        name={key}
+                        value={inputs[key] || ''}
+                        onChange={handleInputChange}
+                        placeholder={`Enter ${key}`}
+                        required={prompt.inputSchema.required?.includes(key)}
+                      />
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="input-group">
+                  <label>Problem Narrative / Context Data</label>
+                  <textarea
+                    name="context"
+                    value={inputs.context || ''}
+                    onChange={handleInputChange}
+                    placeholder="Paste your specific business data or context here for extraction..."
+                  />
+                  <small className="text-muted">No specific schema defined for this prompt. You can provide general context.</small>
+                </div>
+              )}
+
+              <button type="submit" className="execute-button" disabled={loading}>
+                {loading ? (
+                  <>Synthesizing Insight...</>
+                ) : (
+                  <>Run Execution Prompt</>
+                )}
+              </button>
+            </form>
+
+            {error && <div className="error-container" style={{ margin: '1.5rem 0' }}>{error}</div>}
+
+            {output && (
+              <div className="output-container">
+                <div className="nav-label">Synthesis Result</div>
+                <div className="output-box">
+                  {output.html ? (
+                    <div dangerouslySetInnerHTML={{ __html: output.html }} />
+                  ) : (
+                    <pre>{JSON.stringify(output, null, 2)}</pre>
+                  )}
+                </div>
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <button
+                    className="nav-link active"
+                    style={{ display: 'inline-block', border: 'none', cursor: 'pointer', padding: '8px 16px', borderRadius: '6px' }}
+                    onClick={() => {
+                      const textToCopy = output.html || JSON.stringify(output, null, 2);
+                      navigator.clipboard.writeText(textToCopy);
+                      alert('Copied to clipboard!');
+                    }}
+                  >
+                    📋 Copy Result
+                  </button>
+                  {output.html && (
+                    <button
+                      className="nav-link"
+                      style={{ display: 'inline-block', border: 'none', cursor: 'pointer', padding: '8px 16px', borderRadius: '6px', background: '#6b7280' }}
+                      onClick={() => {
+                        const jsonView = document.querySelector('.output-box pre');
+                        const htmlView = document.querySelector('.output-box > div');
+                        if (jsonView) {
+                          jsonView.style.display = jsonView.style.display === 'none' ? 'block' : 'none';
+                          htmlView.style.display = htmlView.style.display === 'none' ? 'block' : 'none';
+                        }
+                      }}
+                    >
+                      🔄 Toggle View
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,71 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { useUstav } from '../App';
 
 function Home() {
-  const [chapters, setChapters] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { ustav, loading, error } = useUstav();
 
-  useEffect(() => {
-    axios.get('/api/chapters')
-      .then(response => {
-        setChapters(response.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Error fetching chapters:', err);
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  if (loading) return <div className="loading-container">Loading book contents...</div>;
+  if (error) return <div className="error-container">Error: {error}</div>;
 
-  if (loading) return (<div className="p-8 text-center">Loading...</div>);
-  if (error) return (<div className="p-8 text-center text-red-600">Error: {error}</div>);
+  const chapters = ustav?.chapters || [];
 
-  // Render the provided literal dashboard design using Tailwind classes (CDN in public/index.html)
   return (
-    <div className="bg-white min-h-screen flex">
-      <div className="w-2 md:w-4 bg-[#C8102E] shrink-0" />
+    <div className="home-dashboard">
+      <header className="dashboard-header">
+        <h1 className="problem-main-title">Workbook Dashboard</h1>
+        <p className="dashboard-subtitle">50 Real-World Challenges from 10 Strategic Industries</p>
+      </header>
 
-      <main className="flex-1 flex flex-col p-8 md:p-16 relative">
-        <div className="absolute top-8 right-8 text-right text-[10px] md:text-xs uppercase tracking-widest text-gray-500">
-          <p>For specialized implementation support, training workshops,</p>
-          <p>or executive consulting</p>
-          <p className="text-[#C8102E] font-bold">mulalic.ai-studio.wiki</p>
+      <div className="dashboard-stats-grid">
+        <div className="sidebar-card">
+          <div className="metric-label">Total Chapters</div>
+          <div className="metric-value" style={{ fontSize: '2rem' }}>{chapters.length}</div>
         </div>
-
-        <header className="mt-12 mb-16">
-          <h1 className="text-6xl md:text-8xl font-black leading-[0.85] tracking-tighter text-black uppercase">
-            AI SOLVED<br />BUSINESS<br />PROBLEMS
-          </h1>
-          <div className="mt-8 flex flex-col gap-1">
-            <p className="text-lg md:text-xl font-medium text-gray-800">50 Real-World Challenges from 10 Industries</p>
-            <p className="text-md md:text-lg text-gray-500 italic">A Manager's Workbook</p>
+        <div className="sidebar-card">
+          <div className="metric-label">Total Problems</div>
+          <div className="metric-value" style={{ fontSize: '2rem' }}>
+            {chapters.reduce((acc, ch) => acc + (ch.problems?.length || 0), 0)}
           </div>
-        </header>
+        </div>
+        <div className="sidebar-card">
+          <div className="metric-label">Target Implementation ROI</div>
+          <div className="metric-value highlight-gain" style={{ fontSize: '2rem' }}>$22M+</div>
+        </div>
+      </div>
 
-        <hr className="border-t border-gray-300 mb-12" />
+      <section className="chapters-selection-grid">
+        <h2 className="section-title">Strategic Domains</h2>
+        <div className="chapters-list-modern">
+          {chapters.map((chapter) => (
+            <Link key={chapter.id} to={`/chapter/${chapter.id}`} className="chapter-luxury-card">
+              <div className="chapter-card-meta">Chapter {chapter.number}</div>
+              <h3 className="chapter-card-title">{chapter.title}</h3>
+              <p className="chapter-card-intro">{chapter.subtitle || 'Executive exploration of AI impact within this domain.'}</p>
+              <div className="chapter-card-footer">
+                <span>{chapter.problems?.length || 0} Problems</span>
+                <span className="arrow">→</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
-        <section className="max-w-5xl">
-          <h2 className="text-2xl font-bold mb-8 uppercase tracking-tight">Table of Contents</h2>
-
-          <div className="flex flex-col border-t border-gray-100">
-            {chapters.slice(0,10).map((chapter, idx) => (
-              <Link key={chapter.id || idx} to={`/chapter/${chapter.id || chapter.number}`} className="group flex items-center py-4 border-b border-gray-100 hover:bg-gray-50 transition-all px-2">
-                <span className="text-[10px] md:text-xs font-bold text-gray-400 uppercase w-24">Chapter {chapter.number || idx+1}</span>
-                <span className="text-sm md:text-base font-bold text-gray-800 uppercase flex-1">{chapter.title}</span>
-                <span className="text-sm text-gray-400 italic">{chapter.intro ? '— ' + (chapter.intro.split('\n')[0].slice(0,40)) : chapter.subtitle || ''}</span>
-                <svg className="w-4 h-4 ml-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        <footer className="mt-auto pt-16">
-          <p className="text-xl md:text-2xl font-bold tracking-tight text-black">Davor Mulalić</p>
-        </footer>
-      </main>
+      <div className="consulting-footer-banner">
+        <span>For specialized implementation support or executive consulting:</span>
+        <a href="https://mulalic.ai-studio.wiki" target="_blank" rel="noreferrer" className="highlight-red">mulalic.ai-studio.wiki</a>
+      </div>
     </div>
   );
 }

@@ -1,322 +1,422 @@
 #!/usr/bin/env node
 
 /**
- * Complete Book Parser
- * Extracts all 10 chapters with all 50 problems and their full content from the TXT file
- * Outputs to data/ustav.json in the format expected by ProblemView.js
+ * AISBS - FINAL PERFECT PARSER v5.0
+ * Based on actual book format analysis
+ * Author: Claude (BOS) - February 2026
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// Read source file
-const txtFile = path.join(__dirname, '../../AI SOLVED BUSINESS PROBLEMS.txt');
-const content = fs.readFileSync(txtFile, 'utf-8');
-const lines = content.split('\n');
+const bookPath = path.join(__dirname, '../../AI SOLVED BUSINESS PROBLEMS.txt');
+const outputPath = path.join(__dirname, '../../data/ustav.json');
 
-console.log('Parsing AI SOLVED BUSINESS PROBLEMS.txt...');
-console.log(`Total lines: ${lines.length}`);
+console.log('🚀 AISBS FINAL Parser v5.0 - Based on Real Format');
+console.log('📖 Loading book...\n');
 
-// Data structure
-const chapters = {};
-let currentChapter = null;
-let currentProblem = null;
-let currentSection = null;
-let inPromptBlock = false;
-let promptBuffer = null;
+const bookText = fs.readFileSync(bookPath, 'utf8');
 
-// Pattern matchers
-const chapterPattern = /^CHAPTER\s+(\d+)/;
-const problemPattern = /^PROBLEM\s+(\d+\.\d+)/;
-const sectionPattern = /^SECTION\s+(\d+)/;
-const promptBeginPattern = /<<<\s*BEGIN\s+PROMPT\s*>>>/i;
-const promptEndPattern = /<<<\s*END\s+PROMPT\s*>>>/i;
+console.log(`✅ Loaded: ${bookText.length.toLocaleString()} chars, ${bookText.split('\n').length.toLocaleString()} lines\n`);
 
-// Section names in order
-const sectionNames = [
-  'operationalReality',
-  'whyTraditionalMethodsFail', // Note: using data field names
-  'managerDecisionOptions',    // Will be mapped to managerDecisionPoint if it's just a string
-  'aiWorkflow',
-  'executionPrompt',           // Execution Prompt is section 5
-  'businessCase',              // Business case might be embedded
-  'industryContext',
-  'failureModes'
-];
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
 
-function addSectionContent(content) {
-  if (!currentProblem) return;
+function extractBetween(text, start, end, fromPos = 0) {
+  const startPos = text.indexOf(start, fromPos);
+  if (startPos === -1) return null;
   
-  const trimmed = content.trim();
-  if (!trimmed) return;
+  const endPos = end ? text.indexOf(end, startPos + start.length) : text.length;
+  const actualEnd = endPos === -1 ? text.length : endPos;
+  
+  return {
+    content: text.substring(startPos + start.length, actualEnd).trim(),
+    startPos: startPos,
+    endPos: actualEnd
+  };
+}
 
-  if (!currentProblem.sectionsArray) {
-    currentProblem.sectionsArray = [];
-  }
+// ============================================================================
+// EXTRACT PROMPTS
+// ============================================================================
 
-  // Parse section heading if it exists in content
-  if (currentProblem.sectionsArray.length === 0 && trimmed !== '') {
-    // First section content - try to extract heading
-    const lines = trimmed.split('\n');
-    let heading = '';
-    let body = trimmed;
+function extractPrompts(problemText, chNum, pNum) {
+  const prompts = [];
+  let searchPos = 0;
+  let promptNum = 1;
+  
+  while (true) {
+    const beginMarker = '<<< BEGIN PROMPT >>>';
+    const endMarker = '<<< END PROMPT >>>';
     
-    if (lines.length > 0) {
-      const firstLine = lines[0];
-      // Check if first few lines look like a heading
-      if (firstLine.length < 100 && !firstLine.includes('your') && !firstLine.includes('You ')) {
-        heading = firstLine;
-        body = lines.slice(1).join('\n').trim();
-      }
+    const beginPos = problemText.indexOf(beginMarker, searchPos);
+    if (beginPos === -1) break;
+    
+    const endPos = problemText.indexOf(endMarker, beginPos);
+    if (endPos === -1) break;
+    
+    const promptCode = problemText.substring(
+      beginPos + beginMarker.length,
+      endPos
+    ).trim();
+    
+    // Look for metadata BEFORE the prompt
+    const metaStart = problemText.lastIndexOf('# PROMPT', beginPos);
+    const metaEnd = beginPos;
+    
+    let version = '1.0';
+    let role = 'AI Assistant';
+    let severity = 'MEDIUM';
+    
+    if (metaStart !== -1 && metaStart > searchPos) {
+      const metadata = problemText.substring(metaStart, metaEnd);
+      
+      const vMatch = metadata.match(/\*\*Version:\*\*\s*(.+)/);
+      const rMatch = metadata.match(/\*\*Role:\*\*\s*(.+)/);
+      const sMatch = metadata.match(/\*\*Severity:\*\*\s*(.+)/);
+      
+      if (vMatch) version = vMatch[1].trim();
+      if (rMatch) role = rMatch[1].trim();
+      if (sMatch) severity = sMatch[1].trim();
     }
-
-    currentProblem.sectionsArray.push({
-      number: currentProblem.sectionsArray.length + 1,
-      heading: heading,
-      content: body || trimmed
+    
+    prompts.push({
+      id: `ch${chNum}_p${pNum}_pr${promptNum}`,
+      version: version,
+      title: `Prompt ${chNum}.${pNum}.${promptNum}`,
+      role: role,
+      severity: severity,
+      promptCode: promptCode
     });
-  } else {
-    currentProblem.sectionsArray.push({
-      number: currentProblem.sectionsArray.length + 1,
-      heading: '',
-      content: trimmed
-    });
+    
+    searchPos = endPos + endMarker.length;
+    promptNum++;
   }
+  
+  return prompts;
 }
 
-function startNewProblem(problemNumber, title) {
-  // Save previous problem
-  if (currentProblem && currentChapter) {
-    if (!chapters[currentChapter.number]) {
-      chapters[currentChapter.number] = currentChapter;
-    }
-    if (!chapters[currentChapter.number].problems) {
-      chapters[currentChapter.number].problems = [];
-    }
-    // Convert sections array to object with named keys
-    if (currentProblem.sectionsArray && currentProblem.sectionsArray.length > 0) {
-      const sectionsObj = {};
-      currentProblem.sectionsArray.forEach((section, index) => {
-        const sectionName = sectionNames[index] || `section${index + 1}`;
-        sectionsObj[sectionName] = section.content;
-      });
-      currentProblem.sections = sectionsObj;
-    }
-    delete currentProblem.sectionsArray;
-    chapters[currentChapter.number].problems.push(currentProblem);
-  }
+// ============================================================================
+// EXTRACT FAILURE MODES
+// ============================================================================
 
-  // Create new problem
-  currentProblem = {
-    id: currentChapter ? `ch${currentChapter.number}_p${problemNumber.split('.')[1]}` : `p${problemNumber}`,
-    number: problemNumber,
-    title: title.trim(),
-    prompts: [],
-    failureModes: []
-  };
-  currentSection = null;
-}
-
-function startNewChapter(chapterNumber, title) {
-  // Save previous chapter's last problem
-  if (currentProblem && currentChapter) {
-    if (!chapters[currentChapter.number]) {
-      chapters[currentChapter.number] = currentChapter;
-    }
-    if (!chapters[currentChapter.number].problems) {
-      chapters[currentChapter.number].problems = [];
-    }
-    // Convert sections array to object
-    if (currentProblem.sectionsArray) {
-      const sectionsObj = {};
-      currentProblem.sectionsArray.forEach((section, index) => {
-        const sectionName = sectionNames[index] || `section${index + 1}`;
-        sectionsObj[sectionName] = section.content;
-      });
-      currentProblem.sections = sectionsObj;
-    }
-    delete currentProblem.sectionsArray;
-    chapters[currentChapter.number].problems.push(currentProblem);
-  }
-
-  currentChapter = {
-    number: chapterNumber,
-    id: `ch${chapterNumber}`,
-    title: title.trim(),
-    intro: `Chapter ${chapterNumber}: ${title.trim()}`,
-    problems: []
-  };
-  currentProblem = null;
-}
-
-// Parse line by line
-let sectionContentBuffer = '';
-
-for (let i = 0; i < lines.length; i++) {
-  const line = lines[i];
-  const chapterMatch = line.match(chapterPattern);
-  const problemMatch = line.match(problemPattern);
-  const sectionMatch = line.match(sectionPattern);
-  const promptBegin = line.match(promptBeginPattern);
-  const promptEnd = line.match(promptEndPattern);
-
-  // Handle prompt blocks
-  if (promptBegin) {
-    inPromptBlock = true;
-    promptBuffer = [];
-    continue;
-  }
-  if (promptEnd) {
-    inPromptBlock = false;
-    if (promptBuffer && currentProblem && promptBuffer.length > 0) {
-      const promptText = promptBuffer.join('\n').trim();
-      if (promptText && !promptText.startsWith('<<<')) {
-        // Try to extract title from first lines
-        const promptLines = promptText.split('\n');
-        let title = 'Executive Prompt';
-        let content = promptText;
-        
-        // Look for a title-like line
-        for (let j = 0; j < Math.min(5, promptLines.length); j++) {
-          const line = promptLines[j].trim();
-          if (line && line.length < 100 && line.length > 10 && !line.includes(':')) {
-            title = line;
-            content = promptLines.slice(j + 1).join('\n').trim();
-            break;
-          }
+function extractFailureModes(problemText) {
+  const failureModes = [];
+  const fmRegex = /FAILURE MODE #(\d+)\n(.+?)\n\n(.+?)(?=\nFAILURE MODE #|\n\nPROBLEM |\n\nCHAPTER |$)/gs;
+  
+  let match;
+  while ((match = fmRegex.exec(problemText)) !== null) {
+    const fmNum = match[1];
+    const fmName = match[2].trim();
+    const fmContent = match[3].trim();
+    
+    // Extract sections from content
+    const symptomMatch = fmContent.match(/What You See[^\n]*\n(.+?)(?=Why It Happens|How to Confirm|$)/s);
+    const causeMatch = fmContent.match(/Why It Happens[^\n]*\n(.+?)(?=How to Confirm|How to Recover|$)/s);
+    const recoveryMatch = fmContent.match(/How to Recover\n(.+?)(?=Email to Your CEO|FAILURE MODE|$)/s);
+    
+    failureModes.push({
+      id: `fm_${fmNum}`,
+      number: parseInt(fmNum),
+      name: fmName,
+      symptom: symptomMatch ? symptomMatch[1].trim().substring(0, 500) : '',
+      rootCause: causeMatch ? causeMatch[1].trim().substring(0, 500) : '',
+      recovery: {
+        immediate: {
+          action: recoveryMatch ? recoveryMatch[1].trim().substring(0, 500) : ''
         }
+      }
+    });
+  }
+  
+  return failureModes;
+}
+
+// ============================================================================
+// PARSE PROBLEM
+// ============================================================================
+
+function parseProblem(chapterText, chNum, pNum) {
+  console.log(`  📄 Problem ${chNum}.${pNum}...`);
+  
+  // Find problem boundaries
+  const problemMarker = `PROBLEM ${chNum}.${pNum}`;
+  const nextProblemMarker = `PROBLEM ${chNum}.${pNum + 1}`;
+  
+  const problemStart = chapterText.indexOf(problemMarker);
+  if (problemStart === -1) {
+    console.log(`    ⚠️  Not found`);
+    return null;
+  }
+  
+  // Find end (next problem, next chapter, or Chapter Summary)
+  let problemEnd = chapterText.indexOf(nextProblemMarker, problemStart);
+  if (problemEnd === -1) {
+    problemEnd = chapterText.indexOf('Chapter Summary', problemStart);
+  }
+  if (problemEnd === -1) {
+    problemEnd = chapterText.indexOf(`CHAPTER ${chNum + 1}`, problemStart);
+  }
+  if (problemEnd === -1) {
+    problemEnd = chapterText.length;
+  }
+  
+  const problemText = chapterText.substring(problemStart, problemEnd);
+  
+  // Extract title (line after PROBLEM marker)
+  const titleEnd = problemText.indexOf('\n');
+  const title = problemText.substring(problemMarker.length, titleEnd).trim();
+  
+  // Extract all 8 sections
+  const sections = {};
+  
+  for (let sNum = 1; sNum <= 8; sNum++) {
+    const sectionMarker = `SECTION ${sNum}`;
+    const nextSectionMarker = `SECTION ${sNum + 1}`;
+    
+    const sectionStart = problemText.indexOf(sectionMarker);
+    
+    if (sectionStart !== -1) {
+      // Find section end
+      let sectionEnd = problemText.indexOf(nextSectionMarker, sectionStart);
+      
+      // If no next section, look for other markers
+      if (sectionEnd === -1) {
+        // Try to find "PROBLEM", "Chapter Summary", or end
+        const possibleEnds = [
+          problemText.indexOf(`PROBLEM ${chNum}.${pNum + 1}`, sectionStart),
+          problemText.indexOf('Chapter Summary', sectionStart),
+          problemText.length
+        ].filter(pos => pos !== -1);
         
-        currentProblem.prompts.push({
-          id: `prompt_${currentProblem.prompts.length + 1}`,
-          title: title,
-          content: content,
-          severity: 'LOW',
-          version: '1.0'
-        });
+        sectionEnd = Math.min(...possibleEnds);
+      }
+      
+      const sectionText = problemText.substring(sectionStart, sectionEnd);
+      
+      // Extract section title (line after SECTION N)
+      const sectionTitleEnd = sectionText.indexOf('\n');
+      const sectionTitle = sectionText.substring(sectionMarker.length, sectionTitleEnd).trim();
+      
+      // Extract content (everything after title)
+      const sectionContent = sectionText.substring(sectionTitleEnd + 1).trim();
+      
+      // Map section number to key name
+      const sectionKeys = [
+        '',
+        'operationalReality',
+        'whyTraditionalFails',
+        'managerDecisionPoint',
+        'aiWorkflow',
+        'executionPrompt',
+        'businessCase',
+        'industryContext',
+        'failureModes'
+      ];
+      
+      const sectionKey = sectionKeys[sNum];
+      
+      if (sectionKey) {
+        sections[sectionKey] = {
+          title: sectionTitle,
+          content: sectionContent
+        };
       }
     }
-    promptBuffer = null;
-    continue;
   }
-
-  if (inPromptBlock) {
-    if (promptBuffer !== null) {
-      promptBuffer.push(line);
-    }
-    continue;
+  
+  // Extract prompts
+  const prompts = extractPrompts(problemText, chNum, pNum);
+  
+  // Extract failure modes (usually in Section 8)
+  const failureModes = extractFailureModes(problemText);
+  
+  // Parse business case (if Section 6 exists)
+  let businessCase = null;
+  if (sections.businessCase) {
+    businessCase = {
+      description: sections.businessCase.content.substring(0, 1500),
+      fullText: sections.businessCase.content
+    };
   }
-
-  // Chapter header
-  if (chapterMatch) {
-    const chapterNum = parseInt(chapterMatch[1]);
-    const rest = line.substring(chapterMatch[0].length).trim();
-    startNewChapter(chapterNum, rest);
-    continue;
-  }
-
-  // Problem header
-  if (problemMatch && currentChapter) {
-    const problemNum = problemMatch[1];
-    const rest = line.substring(problemMatch[0].length).trim();
-    startNewProblem(problemNum, rest);
-    sectionContentBuffer = '';
-    currentSection = null;
-    continue;
-  }
-
-  // Section header
-  if (sectionMatch && currentProblem) {
-    // Save previous section content
-    const sectionNum = parseInt(sectionMatch[1]);
-    if (sectionContentBuffer.trim()) {
-      addSectionContent(sectionContentBuffer);
-    }
-    // Start new section
-    currentSection = sectionNum;
-    sectionContentBuffer = '';
-    continue;
-  }
-
-  // Accumulate section content
-  if (currentProblem && currentSection) {
-    sectionContentBuffer += (sectionContentBuffer ? '\n' : '') + line;
-  }
+  
+  const sectionsCount = Object.keys(sections).length;
+  const promptsCount = prompts.length;
+  const fmCount = failureModes.length;
+  
+  console.log(`    ✅ "${title}"`);
+  console.log(`       Sections: ${sectionsCount}, Prompts: ${promptsCount}, Failure Modes: ${fmCount}`);
+  
+  return {
+    id: `ch${chNum}_p${pNum}`,
+    number: pNum,
+    title: title,
+    sections: sections,
+    prompts: prompts,
+    businessCase: businessCase,
+    failureModes: failureModes
+  };
 }
 
-// Save last problem
-if (currentProblem && currentChapter) {
-  if (sectionContentBuffer.trim()) {
-    addSectionContent(sectionContentBuffer);
+// ============================================================================
+// PARSE CHAPTER
+// ============================================================================
+
+function parseChapter(bookText, chNum) {
+  console.log(`\n📚 Chapter ${chNum}:`);
+  
+  const chapterMarker = `CHAPTER ${chNum}`;
+  const nextChapterMarker = `CHAPTER ${chNum + 1}`;
+  
+  const chapterStart = bookText.indexOf(chapterMarker);
+  if (chapterStart === -1) {
+    console.log(`  ❌ Not found`);
+    return null;
   }
-  if (!chapters[currentChapter.number]) {
-    chapters[currentChapter.number] = currentChapter;
+  
+  // Find chapter end
+  let chapterEnd = bookText.indexOf(nextChapterMarker, chapterStart);
+  if (chapterEnd === -1) {
+    chapterEnd = bookText.indexOf('AFTERWORD', chapterStart);
   }
-  if (!chapters[currentChapter.number].problems) {
-    chapters[currentChapter.number].problems = [];
+  if (chapterEnd === -1) {
+    chapterEnd = bookText.length;
   }
-  // Convert sections array to object
-  if (currentProblem.sectionsArray) {
-    const sectionsObj = {};
-    currentProblem.sectionsArray.forEach((section, index) => {
-      const sectionName = sectionNames[index] || `section${index + 1}`;
-      sectionsObj[sectionName] = section.content;
+  
+  const chapterText = bookText.substring(chapterStart, chapterEnd);
+  
+  // Extract title (line after CHAPTER N)
+  const titleEnd = chapterText.indexOf('\n');
+  const fullTitle = chapterText.substring(chapterMarker.length, titleEnd).trim();
+  
+  // Split title/subtitle
+  let title, subtitle;
+  if (fullTitle.includes(' - ')) {
+    [title, subtitle] = fullTitle.split(' - ').map(s => s.trim());
+  } else {
+    title = fullTitle;
+    subtitle = '';
+  }
+  
+  // Extract intro (text before first PROBLEM)
+  const firstProblemPos = chapterText.indexOf('PROBLEM ');
+  const intro = firstProblemPos !== -1
+    ? chapterText.substring(0, firstProblemPos).trim()
+    : chapterText.substring(0, 2000).trim();
+  
+  // Parse all 5 problems
+  const problems = [];
+  for (let pNum = 1; pNum <= 5; pNum++) {
+    const problem = parseProblem(chapterText, chNum, pNum);
+    if (problem) {
+      problems.push(problem);
+    }
+  }
+  
+  console.log(`  ✅ "${title}" - ${problems.length}/5 problems`);
+  
+  return {
+    id: `ch${chNum}`,
+    number: chNum,
+    title: title,
+    subtitle: subtitle,
+    intro: intro,
+    problems: problems
+  };
+}
+
+// ============================================================================
+// MAIN EXECUTION
+// ============================================================================
+
+console.log('🔍 Parsing all chapters...\n');
+
+const chapters = [];
+let totalProblems = 0;
+let totalPrompts = 0;
+let totalFailureModes = 0;
+
+for (let chNum = 1; chNum <= 10; chNum++) {
+  const chapter = parseChapter(bookText, chNum);
+  if (chapter) {
+    chapters.push(chapter);
+    totalProblems += chapter.problems.length;
+    chapter.problems.forEach(p => {
+      totalPrompts += p.prompts.length;
+      totalFailureModes += p.failureModes.length;
     });
-    currentProblem.sections = sectionsObj;
-  }
-  delete currentProblem.sectionsArray;
-  chapters[currentChapter.number].problems.push(currentProblem);
-}
-
-// Build output structure
-const chaptersArray = [];
-for (let i = 1; i <= 10; i++) {
-  if (chapters[i]) {
-    chaptersArray.push(chapters[i]);
   }
 }
 
-const output = {
+// Build output
+const ustav = {
   metadata: {
+    version: '5.0.0',
     title: 'AI SOLVED BUSINESS PROBLEMS',
-    subtitle: '50 Real-World Challenges from 10 Industries: A Manager\'s Workbook',
-    edition: 'February 2026',
-    location: 'Sarajevo',
-    totalProblems: 50,
-    totalChapters: 10,
-    targetAudience: 'Chief Supply Chain Officers, VPs Operations, CFOs, CIOs | Mid-market ($50M-$500M revenue)',
-    published: '2026-02-01',
-    parseDate: new Date().toISOString()
+    subtitle: '50 Real-World Challenges from 10 Industries',
+    author: 'Davor Mulalić',
+    parsedDate: new Date().toISOString(),
+    totalChapters: chapters.length,
+    totalProblems: totalProblems,
+    totalPrompts: totalPrompts,
+    totalFailureModes: totalFailureModes,
+    source: 'AI SOLVED BUSINESS PROBLEMS.txt'
   },
-  chapters: chaptersArray
+  chapters: chapters
 };
 
-// Statistics
-let totalProblems = 0;
-let totalWithSections = 0;
-let totalWithPrompts = 0;
+// Save
+fs.writeFileSync(outputPath, JSON.stringify(ustav, null, 2), 'utf8');
 
-chaptersArray.forEach(ch => {
-  if (ch.problems) {
-    ch.problems.forEach(p => {
-      totalProblems++;
-      if (p.sections && Object.keys(p.sections).length > 0) {
-        totalWithSections++;
-      }
-      if (p.prompts && p.prompts.length > 0) {
-        totalWithPrompts++;
-      }
-    });
-  }
-});
+const fileSize = fs.statSync(outputPath).size;
+const fileSizeMB = (fileSize / 1024 / 1024).toFixed(2);
 
-// Write output
-const outputPath = path.join(__dirname, '../../data/ustav.json');
-fs.writeFileSync(outputPath, JSON.stringify(output, null, 2), 'utf-8');
+// Summary
+console.log('\n' + '='.repeat(70));
+console.log('✅ PARSING COMPLETE');
+console.log('='.repeat(70));
+console.log('');
+console.log('📊 Final Statistics:');
+console.log(`   Chapters:        ${chapters.length}/10`);
+console.log(`   Problems:        ${totalProblems}/50`);
+console.log(`   Prompts:         ${totalPrompts}`);
+console.log(`   Failure Modes:   ${totalFailureModes}`);
+console.log('');
+console.log('💾 Output:');
+console.log(`   File:            ${outputPath}`);
+console.log(`   Size:            ${fileSizeMB} MB`);
+console.log('');
 
-console.log('\n=== PARSE COMPLETE ===');
-console.log(`Output: ${outputPath}`);
-console.log(`Chapters: ${output.chapters.length}`);
-console.log(`Total Problems: ${totalProblems}`);
-console.log(`Problems with content: ${totalWithSections}`);
-console.log(`Problems with prompts: ${totalWithPrompts}`);
-console.log(`File size: ${(fs.statSync(outputPath).size / 1024).toFixed(2)} KB`);
+// Quality checks
+if (chapters.length === 10) {
+  console.log('✅ All chapters parsed successfully');
+} else {
+  console.log(`⚠️  Only ${chapters.length}/10 chapters parsed`);
+}
+
+if (totalProblems === 50) {
+  console.log('✅ All problems parsed successfully');
+} else {
+  console.log(`⚠️  Only ${totalProblems}/50 problems parsed`);
+}
+
+if (totalPrompts >= 50) {
+  console.log('✅ Prompts extracted successfully');
+} else {
+  console.log(`⚠️  Only ${totalPrompts} prompts found (expected 50+)`);
+}
+
+if (parseFloat(fileSizeMB) >= 1.0) {
+  console.log('✅ File size indicates good content extraction');
+} else {
+  console.log(`⚠️  File size is ${fileSizeMB} MB - may be missing content`);
+}
+
+console.log('');
+console.log('🎯 Next Steps:');
+console.log('   1. cd backend && npm run dev');
+console.log('   2. cd frontend && npm start');
+console.log('   3. Open http://localhost:3000');
+console.log('');
+console.log('='.repeat(70));

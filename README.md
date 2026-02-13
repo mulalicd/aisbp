@@ -79,7 +79,7 @@ aisbs/
 
 ### USTAV (Bounded Content)
 AISBS is strictly bounded by four documents:
-1. **AI SOLVED BUSINESS PROBLEMS.txt** - Complete book (preface, 10 chapters/industries, 50 problems, narratives, ROIs, failure modes)
+1. **book_parsed.md** - Complete book (10 chapters/industries, 50 problems, narratives, ROIs, failure modes)
 2. **RIP-SYSTEM-INSTRUCTIONS.txt** - Research packages for chapters 8-10
 3. **AWA-SYSTEM-INSTRUCTIONS.txt** - Narrative generation system
 4. **META PROMPT-SYSTEM-INSTRUCTIONS.txt** - Meta-prompt for Problem 10.5 (Scenario Modeler)
