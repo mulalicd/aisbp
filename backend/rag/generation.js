@@ -221,6 +221,31 @@ function generateGuidedPrompts(prompts) {
 }
 
 /**
+ * Generate a generic data table
+ */
+function generateGenericTable(headers, rows, style) {
+  const { tableStyle, thStyle, tdStyle } = style;
+  return `
+    <div style="overflow-x: auto; margin-bottom: 16px;">
+      <table style="${tableStyle}">
+        <thead>
+          <tr>
+            ${headers.map(h => `<th style="${thStyle}">${h}</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `
+            <tr>
+              ${row.map(cell => `<td style="${tdStyle}">${cell}</td>`).join('')}
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+/**
  * Generate realistic mock output based on prompt context
  */
 function generateRealisticMockOutput(prompt, context = {}) {
@@ -285,112 +310,159 @@ function generateRealisticMockOutput(prompt, context = {}) {
   // --- SCENARIO 1: FREIGHT & LOGISTICS (Precision Standard) ---
   if (isFreight) {
     type = 'audit';
-    summaryText = "Executed CSCMP-compliant Freight Audit. Identified $3,240 (7.8%) in recoverable leakage.";
+    summaryText = "Executed Freight Audit Simulation. Verified 100% Data Integrity. Identified $246.03 (5.9%) in recoverable leakage.";
     metrics.visualMetrics = [
-      { label: 'Operational Velocity', value: 88, color: 'blue' },
-      { label: 'Strategic Alignment', value: 92, color: 'emerald' }
+      { label: 'Data Integrity', value: 100, color: 'emerald' },
+      { label: 'Leakage Detected', value: 5.9, color: 'red' },
+      { label: 'Auto-Recoverable', value: 92, color: 'blue' }
     ];
+
     bodyHtml = `
       <div style="background: #1e3a8a; color: white; padding: 24px; border-radius: 8px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
         <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.25em; margin-bottom: 12px; opacity: 0.9; font-weight: 700;">Strategic Assessment Protocol: LOG-V4</div>
-        <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2;">🚨 LOGISTICS LEAKAGE DIAGNOSTIC</h1>
+        <h1 style="margin: 0; font-size: 24px; font-weight: 800; line-height: 1.2;">🚨 FREIGHT AUDIT & RECOVERY SIMULATION</h1>
         <div style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          <div style="font-size: 13px;"><strong>Node:</strong> ${problemTitle}</div>
+          <div style="font-size: 13px;"><strong>Methodology:</strong> 5-Step Audit Loop</div>
           <div style="font-size: 13px;"><strong>Standard:</strong> CSCMP-ASMP-LOG-004</div>
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px;">
-        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 12px; border-radius: 6px;">
-          <div style="font-size: 10px; text-transform: uppercase; color: #15803d; font-weight: 700;">Data Integrity</div>
-          <div style="font-size: 18px; font-weight: 800; color: #166534;">98.4%</div>
-        </div>
-        <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 12px; border-radius: 6px;">
-          <div style="font-size: 10px; text-transform: uppercase; color: #b91c1c; font-weight: 700;">Rate Variance</div>
-          <div style="font-size: 18px; font-weight: 800; color: #991b1b;">+14.2%</div>
-        </div>
-        <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 12px; border-radius: 6px;">
-          <div style="font-size: 10px; text-transform: uppercase; color: #1e40af; font-weight: 700;">Recovery Pot.</div>
-          <div style="font-size: 18px; font-weight: 800; color: #1e3a8a;">$12.4k/mo</div>
-        </div>
-      </div>
-
-      <h3 style="${sectionTitleStyle}">1.0 SIGNAL-TO-NOISE AUDIT</h3>
-      <p style="font-size: 13px; color: #4b5563; margin-bottom: 16px;">
-        Analyzing <strong>142 line-item entries</strong> across primary carrier contracts. Reconciling dimensional weight (DIM) violations against negotiated base rates and surcharges.
-      </p>
-
-      ${generateVisualChart('Carrier Performance Metrics', [
-      { label: 'On-Time Delivery (OTD)', value: 84, color: '#10b981' },
-      { label: 'DIM Weight Accuracy', value: 68, color: '#f59e0b' },
-      { label: 'Invoice Precision', value: 92, color: '#3b82f6' },
-      { label: 'Claim Recovery Ratio', value: 42, color: '#ef4444' }
-    ])}
-
-      <h3 style="${sectionTitleStyle}">2.0 ECONOMIC IMPACT MODEL</h3>
-      ${generateROITable([
-      { lever: 'DIM Weight Scrubbing', current: '14.2% Error', optimized: '1.2% Error', impact: '$4,240' },
-      { lever: 'Accessorial Slop', current: '$1,840/mo', optimized: '$240/mo', impact: '$19,200/yr' },
-      { lever: 'Duplicate Billing Loop', current: '2.1% Frequency', optimized: '0.0% Frequency', impact: '$2,160' },
-      { lever: 'Carrier Rate Arbitrage', current: 'Static', optimized: 'Dynamic', impact: '$18,400' }
-    ], { tableStyle, thStyle, tdStyle })}
-
-      <h3 style="${sectionTitleStyle}">3.0 TECHNICAL ROOT CAUSE</h3>
-      <div style="${highlightBoxStyle} border-left-color: #2563eb; background: #f0f7ff;">
-        <div style="font-weight: 800; font-size: 14px; color: #1e3a8a; margin-bottom: 8px;">SYSTEMIC DIAGNOSTIC: CCRL FAILURE</div>
-        <p style="font-size: 13px; color: #1e40af; margin: 0;">
-          Detected systemic 'Service Failure' mismatch in UPS/FedEx electronic data interchange (EDI) 210 status. 
-          8.2% of Ground shipments missed the 4-day delivery window without triggering the <strong>Carrier Claim Recovery Loop (CCRL)</strong>.
+      <div style="margin-bottom: 24px;">
+        <p style="font-size: 13px; color: #4b5563;">
+          Executing freight audit simulation using standardized mock data (Mid-Market Freight Scenario). 
+          Walking through the 5-step methodology to identify margin leakage.
         </p>
-        <ul style="font-size: 12px; margin: 12px 0 0 0; color: #1e40af;">
-          <li><strong>Audit Trail:</strong> Zero (0) auto-refunds detected in the last rolling 90 days.</li>
-          <li><strong>Mismatched Logic:</strong> Carrier E-billing platform defaults to 'Delivered' regardless of window breach.</li>
-          <li><strong>Visibility Gap:</strong> Primary TMS lacks specific 'Window Breach' flags in the reconciliation view.</li>
-        </ul>
       </div>
 
-      <h3 style="${sectionTitleStyle}">4.0 STRATEGIC ROADMAP</h3>
-      ${generateStrategicRoadmap([
-      {
-        title: 'Infrastructure Stabilization',
-        timeline: 'Week 1-2',
-        desc: 'Redirect all EDI 210 feeds through the RAG-based audit layer to freeze billing on identified failures.',
-        milestones: ['EDI Redirect', 'Failure-Mode Mapping', 'Claim Freeze']
-      },
-      {
-        title: 'Contract Renegotiation',
-        timeline: 'Week 3-6',
-        desc: 'Trigger the "Hard-Cap" clause for Accessorial surcharges and enforce auto-refund CCRL protocol.',
-        milestones: ['Clause Audit', 'Vendor Negotiation', 'CCRL Activation']
-      },
-      {
-        title: 'Autonomous Oversight',
-        timeline: 'Week 7+',
-        desc: 'Deploy the full RAG-reconciler to handle 100% of line-item verification without human oversight.',
-        milestones: ['Model Tuning', 'Shadow Mode Test', 'Full Rollout']
-      }
-    ])}
+      <h3 style="${sectionTitleStyle}">SIMULATION DATA GENERATION</h3>
+      <p style="font-size: 13px; color: #4b5563; margin-bottom: 12px;"><strong>INPUT 1: Master Contract Rates</strong></p>
+      ${generateGenericTable(
+      ['Carrier', 'Service', 'Origin', 'Dest', 'Base Rate', 'Wt Break', 'Min Charge'],
+      [
+        ['ABF Freight', 'Standard LTL', '90210', '10001', '$425.00', '500-1000', '$85.00'],
+        ['ABF Freight', 'Standard LTL', '90210', '60601', '$389.00', '500-1000', '$85.00'],
+        ['Old Dominion', 'Guaranteed', '90210', '10001', '$575.00', '500-1000', '$95.00'],
+        ['Old Dominion', 'Standard LTL', '90210', '30301', '$362.00', '500-1000', '$82.00'],
+        ['UPS Freight', 'Standard LTL', '90210', '75201', '$408.00', '500-1000', '$88.00'],
+        ['FedEx Freight', 'Priority', '90210', '98101', '$512.00', '500-1000', '$92.00']
+      ],
+      { tableStyle, thStyle, tdStyle }
+    )}
 
-      <h3 style="${sectionTitleStyle}">5.0 EXECUTIVE SUMMARY (CMO/COO)</h3>
-      <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 6px; font-size: 13px; color: #334155;">
-        <p style="margin: 0 0 12px 0;"><strong>Strategic Verdict:</strong> The current logistics setup is suffering from <strong>"Ghost Leakage"</strong>. Your carriers are meeting their service level agreements (SLAs) on paper, but the actual delivery windows are slipping at a rate that is costing the bottom line $12.4k per month in unrecovered claims.</p>
-        <p style="margin: 0;"><strong>Immediate Recommendation:</strong> Execute the Claim Freeze protocol immediately for the 32 specific Service Failures identified in the current batch.</p>
+      <p style="font-size: 13px; color: #4b5563; margin-top: 20px; margin-bottom: 12px;"><strong>INPUT 2: Itemized Freight Invoices (Sample)</strong></p>
+       ${generateGenericTable(
+      ['Invoice ID', 'Tracking', 'Carrier', 'Wt', 'Description', 'Amount', 'Total'],
+      [
+        ['INV-2024-001', 'ABF987...', 'ABF Freight', '750', 'Base Freight', '$475.00', '$618.13'],
+        ['INV-2024-002', 'OD987...', 'Old Dominion', '825', 'Base Freight', '$575.00', '$747.50'],
+        ['INV-2024-003', 'UPS456...', 'UPS Freight', '625', 'Base Freight', '$408.00', '$530.40'],
+        ['INV-2024-006', 'FX654...', 'FedEx Freight', '875', 'Base Freight', '$550.00', '$770.00']
+      ],
+      { tableStyle, thStyle, tdStyle }
+    )}
+
+      <h3 style="${sectionTitleStyle}">STEP 1: DATA INTEGRITY & BASELINE DIAGNOSTIC</h3>
+      ${generateGenericTable(
+      ['Invoice ID', 'Line Item Sum', 'Total Charge', 'Variance', 'Status'],
+      [
+        ['INV-2024-001', '$618.13', '$618.13', '$0.00', '✓ PASS'],
+        ['INV-2024-002', '$747.50', '$747.50', '$0.00', '✓ PASS'],
+        ['INV-2024-003', '$530.40', '$530.40', '$0.00', '✓ PASS'],
+        ['INV-2024-004', '$578.50', '$578.50', '$0.00', '✓ PASS'],
+        ['INV-2024-005', '$470.60', '$470.60', '$0.00', '✓ PASS']
+      ],
+      { tableStyle, thStyle, tdStyle }
+    )}
+      <div style="font-size: 13px; font-weight: bold; color: #059669; margin-top: 8px;">DIAGNOSTIC: 100% Data Integrity - Proceeding to Step 2</div>
+
+      <h3 style="${sectionTitleStyle}">STEP 2: RATE LOGIC VERIFICATION</h3>
+      ${generateGenericTable(
+      ['Invoice', 'Carrier', 'Lane', 'Contract Base', 'Invoiced', 'Variance', 'Reasoning'],
+      [
+        ['INV-001', 'ABF', '90210→10001', '$425.00', '$475.00', '<span style="color:#dc2626">+$50.00</span>', 'Rate creep - 11.8% above contract'],
+        ['INV-002', 'ODFL', '90210→10001', '$575.00', '$575.00', '$0.00', 'Matches contract'],
+        ['INV-004', 'ABF', '90210→10001', '$425.00', '$445.00', '<span style="color:#dc2626">+$20.00</span>', 'Rate discrepancy'],
+        ['INV-006', 'FedEx', '90210→98101', '$512.00', '$550.00', '<span style="color:#dc2626">+$38.00</span>', '7.4% above Priority rate']
+      ],
+      { tableStyle, thStyle, tdStyle }
+    )}
+
+      <h3 style="${sectionTitleStyle}">STEP 3: ACCESSORIAL & "GHOST CHARGE" AUDIT</h3>
+       ${generateGenericTable(
+      ['Invoice', 'Charge Type', 'Invoiced', 'Contract Rate', 'Variance', 'Confidence'],
+      [
+        ['INV-001', 'Fuel Surcharge', '$85.50', '$76.50', '<span style="color:#dc2626">+$9.00</span>', '10/10'],
+        ['INV-001', 'Residential', '$57.63', '$45.00', '<span style="color:#dc2626">+$12.63</span>', '10/10'],
+        ['INV-002', 'Liftgate', '$69.00', '$60.00', '<span style="color:#dc2626">+$9.00</span>', '10/10'],
+        ['INV-004', 'Detention', '$225.00', '$75.00', '<span style="color:#d97706">+$150.00</span>', '5/10*'],
+        ['INV-006', 'Sat Delivery', '$121.00', '$95.00', '<span style="color:#dc2626">+$26.00</span>', '10/10']
+      ],
+      { tableStyle, thStyle, tdStyle }
+    )}
+      <div style="font-size: 11px; color: #d97706; font-style: italic;">*Detention confidence reduced pending dock log verification</div>
+
+      <h3 style="${sectionTitleStyle}">STEP 4: OUTPUT GENERATION & ROI</h3>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <h4 style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">DELIVERABLE 1: Recovery Summary</h4>
+          ${generateGenericTable(
+      ['Carrier', 'Audited', 'Errors', 'Recovery'],
+      [
+        ['ABF Freight', '$1,663', '7', '$195.23'],
+        ['Old Dominion', '$1,218', '1', '$9.00'],
+        ['FedEx Freight', '$770', '2', '$32.84'],
+        ['<strong>TOTAL</strong>', '<strong>$4,181</strong>', '<strong>11</strong>', '<strong>$246.03</strong>']
+      ],
+      { tableStyle: "width: 100%; border-collapse: collapse; font-size: 11px;", thStyle, tdStyle }
+    )}
+        </div>
+        <div>
+           <h4 style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">DELIVERABLE 2: Dispute Log</h4>
+           <div style="background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 11px;">
+              <div style="margin-bottom: 8px;"><strong>High-Confidence Disputes:</strong> $224.03</div>
+              <div style="margin-bottom: 8px;"><strong>Pending Verification:</strong> $150.00</div>
+              <div style="color: #059669; font-weight: bold;">Leakage: 5.9% of spend</div>
+           </div>
+        </div>
       </div>
 
+       <h4 style="font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 16px; margin-bottom: 8px;">DELIVERABLE 3: Generated Dispute Emails</h4>
+       <div style="background: #f1f5f9; padding: 16px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; font-family: monospace; border: 1px solid #e2e8f0;">
+<strong>TO:</strong> ABF Freight Billing Disputes <billing.disputes@abf.com>
+<strong>SUBJECT:</strong> Invoice Dispute - Rate & Accessorial Corrections - INV-2024-001
+
+Dear ABF Freight Billing Team,
+
+Per our Master Carrier Agreement (Contract #MC-2024-ABF), we are disputing the following charges:
+
+1. Base Rate (INV-001): Billed $475.00 vs Contract $425.00. Overcharge: $50.00
+2. Fuel Surcharge: Incorrectly calculated on inflated base. Overcharge: $9.00
+3. Residential: Billed $57.63 vs Contract $45.00. Overcharge: $12.63
+
+Total Credits Requested: <strong>$71.63</strong>
+
+Please issue credit memos immediately.
+       </div>
+
+      <h3 style="${sectionTitleStyle}">STEP 5: FINAL RECOMMENDATIONS</h3>
       ${generateActionPlan([
-      { title: 'Immediate Claim Freeze', desc: 'Notify carriers of 32 specific Service Failures identified in this audit snippet and halt pending invoices.' },
-      { title: 'TMS Sync Refresh', desc: 'Update the Transport Management System reconciliation parameters to flag 4-day window breaches automatically.' },
-      { title: 'RAG-Auditor Activation', desc: 'Deploy the RAG-based auto-reconciler to prevent future batch-file csv slop and automate recovery.' }
+      { title: 'IMMEDIATE ACTION', desc: 'Send all 10 high-confidence disputes totaling $184.03.' },
+      { title: 'PENDING REVIEW', desc: 'Request dock receipts for Detention charge of $150.00.' },
+      { title: 'PROCESS IMPROVEMENT', desc: 'ABF Freight shows 11.8% rate inflation pattern. Consider automated verification.' }
     ], { highlightBoxStyle })}
 
+      <div style="margin-top: 16px; font-size: 13px; font-weight: 700; color: #1e3a8a;">
+        The "Chaos Tax" identified: 5.9% of freight spend (Industry Avg: 6%)
+      </div>
+
       ${generateGuidedPrompts([
-      'drill down into the specific Service Failures by region',
-      'generate a formal carrier dispute letter template',
-      'simulate the ROI of a 10% rate reduction across all Ground shipments'
+      'send these dispute emails to carriers now',
+      'generate a dock log request template for detention',
+      'simulate a 10% rate reduction negotiation scenario'
     ])}
     `;
 
-    // --- SCENARIO 2: HR & TALENT MANAGEMENT (Precision Standard) ---
   } else if (isHR) {
     type = 'hr_analysis';
     summaryText = "Talent Velocity Analysis Complete. Identified $84k in annual Productivity Drag.";
@@ -1164,6 +1236,32 @@ function generateRealisticMockOutput(prompt, context = {}) {
   // Final Wrapper
   const finalHtml = `
     <div style="${containerStyle}">
+      <style>
+         @media print {
+            @page {
+              margin-top: 20mm;
+              margin-bottom: 20mm;
+              size: auto;
+            }
+            body { 
+               -webkit-print-color-adjust: exact; 
+               print-color-adjust: exact; 
+            }
+            /* Smart Break Prevention */
+            h1, h2, h3, h4, table, tr, div[style*="background"], ul, ol {
+               page-break-inside: avoid;
+               break-inside: avoid;
+            }
+            h3, h4 {
+               page-break-after: avoid;
+               break-after: avoid;
+            }
+            /* Ensure large blocks don't span pages awkwardly */
+            div[style*="border"], div[style*="box-shadow"] {
+               page-break-inside: avoid;
+            }
+         }
+      </style>
       ${bodyHtml}
       ${riskMitigationHtml}
     </div>
@@ -1185,6 +1283,9 @@ async function generateLLM(augmentedPrompt, promptMetadata, startTime, options =
   let apiProvider = options.provider || process.env.LLM_PROVIDER || 'anthropic';
   let apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY;
 
+  // NEW: Gemini Key Pool
+  const geminiKeyPool = (process.env.GEMINI_API_KEYS || '').split(',').map(k => k.trim()).filter(k => k.length > 0);
+
   // Auto-detect provider based on key prefix if injected from UI
   if (options.apiKey) {
     if (options.apiKey.startsWith('sk-ant')) apiProvider = 'anthropic';
@@ -1194,7 +1295,7 @@ async function generateLLM(augmentedPrompt, promptMetadata, startTime, options =
     else if (options.apiKey.startsWith('pplx-')) apiProvider = 'perplexity';
   }
 
-  if (!apiKey) {
+  if (!apiKey && (apiProvider !== 'gemini' || geminiKeyPool.length === 0)) {
     throw new Error(`No API key provided for ${apiProvider}. Please enter a key in the Workbench or set ${apiProvider.toUpperCase()}_API_KEY environment variable.`);
   }
 
@@ -1346,47 +1447,76 @@ At the end of every response, you MUST provide exactly three guided follow-up pr
       model = modelName;
 
     } else if (apiProvider === 'gemini') {
-      // Gemini Direct JSON API
+      // Gemini Direct JSON API with Key Rotation
       const fetch = require('node-fetch');
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
 
-      // Convert messages to Gemini format (user/model roles)
-      const geminiContent = messages.map(m => ({
-        role: m.role === 'user' ? 'user' : 'model',
-        parts: [{ text: m.content }]
-      }));
+      // Determine keys to use
+      let keysToTry = options.apiKey ? [options.apiKey] : geminiKeyPool;
+      if (!options.apiKey && keysToTry.length > 1) {
+        keysToTry = keysToTry.sort(() => Math.random() - 0.5); // Shuffle
+      }
+      if (keysToTry.length === 0 && apiKey) keysToTry = [apiKey]; // Fallback to single key if pool empty
 
-      // Add System Instruction if supported (v1beta) or prepend to first message
-      // System instructions are separate in Gemini API
-      const payload = {
-        contents: geminiContent,
-        systemInstruction: {
-          parts: [{ text: systemPrompt }]
-        },
-        generationConfig: {
-          maxOutputTokens: 4096,
-          temperature: 0.7
+      let lastError = null;
+      let success = false;
+
+      for (const currentKey of keysToTry) {
+        try {
+          console.log(`[Gemini] Attempting generation with key ending in ...${currentKey.slice(-4)}`);
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${currentKey}`;
+
+          const geminiContent = messages.map(m => ({
+            role: m.role === 'user' ? 'user' : 'model',
+            parts: [{ text: m.content }]
+          }));
+
+          const payload = {
+            contents: geminiContent,
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: { maxOutputTokens: 8192, temperature: 0.7 }
+          };
+
+          const res = await fetch(geminiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json();
+
+          if (data.error) {
+            if (data.error.code === 429 || data.error.message.includes('quota') || data.error.message.includes('exhausted')) {
+              console.warn(`[Gemini] Quota exhausted for key ...${currentKey.slice(-4)}. Rotating...`);
+              lastError = new Error(`Quota Exceeded: ${data.error.message}`);
+              continue;
+            }
+            throw new Error(`Gemini API Error: ${data.error.message}`);
+          }
+
+          if (!data.candidates || !data.candidates[0].content) {
+            if (data.candidates && data.candidates[0].finishReason === 'MAX_TOKENS') {
+              console.warn('[Gemini] Response truncated (MAX_TOKENS).');
+            } else {
+              throw new Error('Gemini returned empty response');
+            }
+          }
+
+          response = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          if (!response && data.candidates?.[0]?.finishReason === 'MAX_TOKENS') {
+            response = "[Response truncated due to token limit]";
+          }
+
+          model = 'gemini-1.5-pro';
+          success = true;
+          break;
+
+        } catch (err) {
+          console.warn(`[Gemini] Key failed: ${err.message}`);
+          lastError = err;
         }
-      };
-
-      const res = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await res.json();
-
-      if (data.error) {
-        throw new Error(`Gemini API Error: ${data.error.message}`);
       }
 
-      if (!data.candidates || !data.candidates[0].content) {
-        throw new Error('Gemini returned empty response');
-      }
-
-      response = data.candidates[0].content.parts[0].text;
-      model = 'gemini-1.5-pro';
+      if (!success) throw lastError || new Error("All Gemini keys failed.");
 
       if (FEATURES.ENABLE_CONVERSATION_HISTORY && options.sessionId) {
         conversationManager.addMessage(options.sessionId, 'assistant', response);

@@ -307,48 +307,33 @@ const PromptSplitView = ({ prompt, onExecute }) => {
     const element = document.getElementById('conversation-history');
     if (!element) return;
 
-    // Access globals from CDN
-    const html2canvas = window.html2canvas;
-    const jsPDF = window.jspdf ? window.jspdf.jsPDF : null;
-
-    if (!html2canvas || !jsPDF) {
-      alert('PDF libraries not loaded. Please wait for the page to finish loading or check your connection.');
+    // Check availability of html2pdf (loaded via CDN)
+    if (!window.html2pdf) {
+      alert('PDF library (html2pdf) not loaded yet. Please wait or refresh.');
       return;
     }
 
     setLoading(true);
+
+    const opt = {
+      margin: [15, 15, 15, 15], // Top, Left, Bottom, Right margins in mm
+      filename: `AISBS_Executive_Report_${prompt.id}_${new Date().toISOString().slice(0, 10)}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // Smart page breaks
+    };
+
     try {
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff'
-      });
+      // Add a temporary class to ensure background colors are printed
+      element.classList.add('printing-mode');
 
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      await window.html2pdf().set(opt).from(element).save();
 
-      let heightLeft = pdfHeight;
-      let position = 0;
-      const pageHeight = pdf.internal.pageSize.getHeight();
-
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - pdfHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pageHeight;
-      }
-
-      pdf.save(`AISBS_Executive_Report_${prompt.id}_${new Date().toISOString().slice(0, 10)}.pdf`);
+      element.classList.remove('printing-mode');
     } catch (err) {
       console.error('PDF Generation Error:', err);
-      alert('Failed to generate PDF. Please check console.');
+      alert('Failed to generate PDF. Check console for details.');
     } finally {
       setLoading(false);
     }

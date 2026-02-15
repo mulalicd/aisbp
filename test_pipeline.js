@@ -9,9 +9,14 @@ const http = require('http');
 
 // Step 1: Re-parse the book
 console.log('📖 Step 1: Re-parsing the book...\n');
+const { execSync } = require('child_process');
 const parserPath = path.join(__dirname, 'backend', 'scripts', 'parseBook.js');
-delete require.cache[require.resolve(parserPath)];
-require(parserPath);
+try {
+  execSync(`node "${parserPath}"`, { stdio: 'inherit' });
+} catch (e) {
+  console.error('❌ Parsing failed:', e.message);
+  process.exit(1);
+}
 
 // Step 2: Verify JSON was created
 console.log('\n📊 Step 2: Verifying parsed JSON...\n');
@@ -41,15 +46,15 @@ const serverModule = require(serverPath);
 // Wait for server to start, then test endpoints
 setTimeout(() => {
   console.log('\n🧪 Step 4: Testing API endpoints...\n');
-  
+
   const testEndpoints = [
     '/api/chapters',
     '/api/chapters/1',
     '/api/chapters/1/problems/1.1'
   ];
-  
+
   let completed = 0;
-  
+
   testEndpoints.forEach((endpoint) => {
     const options = {
       hostname: 'localhost',
@@ -57,7 +62,7 @@ setTimeout(() => {
       path: endpoint,
       method: 'GET'
     };
-    
+
     const req = http.request(options, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
@@ -79,7 +84,7 @@ setTimeout(() => {
         }
       });
     });
-    
+
     req.on('error', (err) => {
       console.error(`❌ ${endpoint} - Error: ${err.message}`);
       completed++;
@@ -88,7 +93,7 @@ setTimeout(() => {
         process.exit(1);
       }
     });
-    
+
     req.end();
   });
 }, 2000);

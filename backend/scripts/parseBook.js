@@ -160,66 +160,55 @@ function saveOutput(obj, p) {
 }
 
 function main() {
-  console.log('📖 Loaded book:', inputPath);
-  const text = readBook(inputPath);
-  console.log('   Lines:', text.split(/\r?\n/).length, ' Chars:', text.length);
-
-  console.log('\n🚀 Parsing (line-by-line state machine)...');
-  const out = buildOutput(inputPath, text);
-
-  console.log('\n📊 PARSING STATISTICS:');
-  console.log('   Chapters parsed:', out.totalChapters);
-  console.log('   Problems parsed:', out.totalProblems);
-
-  // Log sample of first problem
-  if (out.chapters[0] && out.chapters[0].problems[0]) {
-    const p = out.chapters[0].problems[0];
-    console.log('\n📄 Sample Problem ' + p.id + ':');
-    console.log('   - Sections: ' + p.sections.length);
-    console.log('   - Prompts: ' + p.prompts.length);
-    if (p.sections.length > 0) {
-      console.log('   - Section 1 length: ' + p.sections[0].content.length + ' chars');
+  try {
+    console.log('Using input path:', inputPath);
+    if (!fs.existsSync(inputPath)) {
+      throw new Error(`Input file does not exist at ${inputPath}`);
     }
+
+    console.log('📖 Loaded book:', inputPath);
+    const text = readBook(inputPath);
+    console.log('   Lines:', text.split(/\r?\n/).length, ' Chars:', text.length);
+
+    console.log('\n🚀 Parsing (line-by-line state machine)...');
+    const out = buildOutput(inputPath, text);
+
+    console.log('\n📊 PARSING STATISTICS:');
+    console.log('   Chapters parsed:', out.totalChapters);
+    console.log('   Problems parsed:', out.totalProblems);
+
+    // Log sample of first problem
+    if (out.chapters[0] && out.chapters[0].problems[0]) {
+      const p = out.chapters[0].problems[0];
+      console.log('\n📄 Sample Problem ' + p.id + ':');
+      console.log('   - Sections: ' + p.sections.length);
+      console.log('   - Prompts: ' + p.prompts.length);
+      if (p.sections.length > 0) {
+        console.log('   - Section 1 length: ' + p.sections[0].content.length + ' chars');
+      }
+    }
+
+    saveOutput(out, outPath);
+    const stats = fs.statSync(outPath);
+    const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
+    const linesCount = fs.readFileSync(outPath, 'utf8').split(/\r?\n/).length;
+    console.log('\n💾 Saved to:', outPath);
+    console.log('   File size:', sizeMB, 'MB');
+    console.log('   Lines:', linesCount);
+    console.log('\n✅ Parsing complete');
+  } catch (err) {
+    console.error('❌ FATAL ERROR in parseBook main:', err);
+    process.exit(1);
   }
-
-  saveOutput(out, outPath);
-  const stats = fs.statSync(outPath);
-  const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
-  const lines = fs.readFileSync(outPath, 'utf8').split(/\r?\n/).length;
-  console.log('\n💾 Saved to:', outPath);
-  console.log('   File size:', sizeMB, 'MB');
-  console.log('   Lines:', lines);
-  console.log('\n✅ Parsing complete');
 }
 
-main();
-
-
-function saveOutput(obj, p) {
-  fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(obj, null, 2), 'utf8');
+if (require.main === module) {
+  main();
+} else {
+  // Export for testing if needed
+  module.exports = {
+    extractAllProblems,
+    buildChapters,
+    buildOutput
+  };
 }
-
-function main() {
-  console.log('📖 Loaded book:', inputPath);
-  const text = readBook(inputPath);
-  console.log('   Lines:', text.split(/\r?\n/).length, ' Chars:', text.length);
-
-  console.log('\n🚀 Parsing (TOC-stripping + chapter/problem extraction)...');
-  const out = buildOutput(inputPath, text);
-
-  console.log('\n📊 PARSING STATISTICS:');
-  console.log('   Chapters parsed:', out.totalChapters);
-  console.log('   Problems parsed:', out.totalProblems);
-
-  saveOutput(out, outPath);
-  const stats = fs.statSync(outPath);
-  const sizeMB = (stats.size / (1024 * 1024)).toFixed(2);
-  const lines = fs.readFileSync(outPath, 'utf8').split(/\r?\n/).length;
-  console.log('\n💾 Saved to:', outPath);
-  console.log('   File size:', sizeMB, 'MB');
-  console.log('   Lines:', lines);
-  console.log('\n✅ Parsing complete');
-}
-
-main();
